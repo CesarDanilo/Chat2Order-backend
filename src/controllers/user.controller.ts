@@ -12,4 +12,10 @@ export class UserController{
       return res.status(500)
     }
   }
+
+  async GetAllUsersController(req: Request, res: Response){
+    const userService = new UserService();
+    const result = await userService.GetAllUsers();
+    return res.json(result);
+  }
 }
