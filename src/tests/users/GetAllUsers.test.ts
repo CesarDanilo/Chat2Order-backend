@@ -14,7 +14,6 @@ describe('UserController - GetAllUsersController', () => {
     };
 
     const userController = new UserController();
-
     await userController.GetAllUsersController(req, res);
 
     expect(res.status).toHaveBeenCalledWith(200);

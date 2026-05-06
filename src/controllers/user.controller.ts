@@ -16,6 +16,6 @@ export class UserController{
   async GetAllUsersController(req: Request, res: Response){
     const userService = new UserService();
     const result = await userService.GetAllUsers();
-    return res.json(result);
+    return res.status(200).json(result);
   }
 }
