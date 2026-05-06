@@ -18,16 +18,22 @@ export class UserService{
       }
     })
     
-    return user
+    return user;
   }
 
   async GetAllUsers() {
     const users = await prisma.user.findMany()
-    return users
+    return users;
   }
 
   async GetUserById(id:string) {
     const user = await prisma.user.findUnique({ where: { id } })
     return user;
   }
+
+  async DeleteUserById(id:string){
+    const user = await prisma.user.delete({ where: { id }})
+    return user;
+  }
+
 }
