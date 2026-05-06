@@ -36,4 +36,15 @@ export class UserService{
     return user;
   }
 
+  async UpdateUserById(id:string, userdata: Usertype) {
+    const user = await prisma.user.update({
+      data: {
+        name: userdata.name,
+        email: userdata.email,
+        password: userdata.password,
+      },
+      where: { id }
+    })
+    return user;
+  }
 }

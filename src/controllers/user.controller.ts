@@ -1,6 +1,5 @@
 import { Request, Response } from "express";
 import { UserService } from "../services/user.service";
-import { error } from "node:console";
 
 export class UserController{
   async CreateUserController(req: Request, res: Response) {
@@ -50,4 +49,20 @@ export class UserController{
       return res.status(500);
     }
   }
+
+  async UpdateUserByIdController(req: Request<{ id: string }>, res: Response) {
+    const userService = new UserService();
+    if(!req.params.id || !req.body.name || !req.body.email || !req.body.password) throw new Error("id, name, email and password are required");
+
+    const { id } = req.params;
+    const userdata = req.body;
+
+    try{
+      const result = await userService.UpdateUserById(id, userdata);
+      return res.status(204).json(result);
+    }catch(error){
+      return res.status(500);
+    }
+  }
+  
 }

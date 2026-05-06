@@ -8,5 +8,6 @@ router.post('/user', controllerUser.CreateUserController)
 router.get('/user', controllerUser.GetAllUsersController)
 router.get('/user/:id', controllerUser.GetUserByIdController)
 router.delete('/user/:id', controllerUser.DeleteUserByIdController)
+router.put('/user/:id', controllerUser.UpdateUserByIdController)
 
 export default router;
