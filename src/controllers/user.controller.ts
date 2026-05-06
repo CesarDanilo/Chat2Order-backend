@@ -5,7 +5,6 @@ export class UserController{
   async CreateUserController(req: Request, res: Response) {
     const userService = new UserService();
     try {
-      console.log("entrando no controller")
       const result = await userService.createUser(req.body);
       return res.status(201).json(result);
     }catch(error){

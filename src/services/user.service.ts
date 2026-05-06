@@ -9,7 +9,6 @@ interface Usertype {
 
 export class UserService{
   async createUser(userdata: Usertype) {
-    console.log("entrou no service")
     const user = await prisma.user.create({
       data: {
         id: userdata.id,
