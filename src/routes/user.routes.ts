@@ -6,5 +6,6 @@ const controllerUser = new UserController();
 
 router.post('/user', controllerUser.CreateUserController)
 router.get('/user', controllerUser.GetAllUsersController)
+router.get('/user/:id', controllerUser.GetUserByIdController)
 
 export default router;
