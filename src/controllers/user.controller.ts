@@ -52,17 +52,32 @@ export class UserController{
 
   async UpdateUserByIdController(req: Request<{ id: string }>, res: Response) {
     const userService = new UserService();
-    if(!req.params.id || !req.body.name || !req.body.email || !req.body.password) throw new Error("id, name, email and password are required");
+
+    if (!req.params.id || !req.body.name || !req.body.email || !req.body.password) {
+      return res.status(400).json({
+        message: "id, name, email and password are required"
+      });
+    }
 
     const { id } = req.params;
     const userdata = req.body;
 
-    try{
+    try {
       const result = await userService.UpdateUserById(id, userdata);
-      return res.status(204).json(result);
-    }catch(error){
-      return res.status(500);
+
+      return res.status(200).json(result);
+
+    } catch (error: any) {
+
+      if (error.message === 'User not found') {
+        return res.status(404).json({
+          message: error.message
+        });
+      }
+
+      return res.status(500).json({
+        message: 'Erro interno'
+      });
     }
   }
-  
 }
