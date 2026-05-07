@@ -1,5 +1,5 @@
 import { prisma } from "../config/prisma";
- import bcrypt from "bcrypt";
+import bcrypt from "bcrypt";
  
 interface Usertype {
     id: string;
@@ -16,6 +16,8 @@ interface UsertypeUpdate {
 
 export class UserService{
   async createUser(userdata: Usertype) {
+    userdata.password = await bcrypt.hash(userdata.password, 10);
+    
     const user = await prisma.user.create({
       data: {
         id: userdata.id,
