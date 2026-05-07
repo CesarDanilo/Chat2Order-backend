@@ -1,22 +1,31 @@
-import { prisma } from "../../config/prisma";
+import { IUserRepository } from "../../intefaces/IUserRepository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-export async function AuthenticateUserService (email: string, password: string){
-  const user = await prisma.user.findUnique( { where: { email } } );
-  if (!user) throw new Error("User not found"); 
 
-  const passwordMatch = await bcrypt.compare(password, user.password);
-  if(!passwordMatch) throw new Error('Invalid credentials');
+export class AuthenticateUserService{
 
-  const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET!, { expiresIn: '1d' });
+  constructor(
+    private usersRepository: IUserRepository
+  ){}
 
-  return {
-    user: {
-      "id": user.id,
-      "name": user.name,
-      "email": user.email
-    },
-    token: token
-  };
+  async execute (email: string, password: string){
+    const user = await this.usersRepository.findByEmail(email);
+    if (!user) throw new Error("Invalid credentials");
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if(!passwordMatch) throw new Error('Invalid credentials');
+
+    const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET!, { expiresIn: '1d' });
+
+    return {
+      user: {
+        "id": user.id,
+        "name": user.name,
+        "email": user.email
+      },
+      token: token
+    };
+  }
 }
+
