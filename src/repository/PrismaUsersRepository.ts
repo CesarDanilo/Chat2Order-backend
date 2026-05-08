@@ -2,7 +2,7 @@ import { prisma } from "../config/prisma";
 import {
   IUserRepository,
   CreateUserDTO
-} from "../intefaces/IUserRepository";
+} from "../interfaces/IUserRepository";
 
 export class PrismaUsersRepository implements IUserRepository {
 
