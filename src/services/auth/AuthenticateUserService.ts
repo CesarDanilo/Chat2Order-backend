@@ -16,7 +16,7 @@ export class AuthenticateUserService{
     const passwordMatch = await bcrypt.compare(password, user.password);
     if(!passwordMatch) throw new Error('Invalid credentials');
 
-    const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET!, { expiresIn: '1d' });
+    const token = jwt.sign({ sub: user.id }, process.env.JWT_SECRET as string, { expiresIn: '1d' });
 
     return {
       user: {
