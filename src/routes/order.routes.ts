@@ -6,5 +6,6 @@ const router = Router();
 const orderController = new OrderController();
 
 router.get('/order', authMiddleware, orderController.GetOrders)
+router.post('/order', authMiddleware, orderController.CreateOrder)
 
 export default router;

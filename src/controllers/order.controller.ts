@@ -22,4 +22,24 @@ export class OrderController {
       });
     }
   }
+
+  async CreateOrder(req: Request, res: Response){
+    const orderRepository = new PrismaOrderRepository();
+    const orderService = new OrderService(orderRepository);
+
+    try{
+      const userId = (req as any).user.id;
+      const order = await orderService.CreateOrder(req.body, userId);
+      return res.json(order);
+
+    }catch(error: any){
+
+      console.error("❌ Erro detalhado no OrderController:", error);
+
+      return res.status(500).json({
+        error: "Error processing order",
+        message: error.message
+      });
+    }
+  }
 }
