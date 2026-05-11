@@ -1,9 +1,11 @@
 import { Request, Response } from "express";
 import { OrderService } from "../services/order.service";
+import { PrismaOrderRepository } from "../repository/PrismaOrderRepository";
 
 export class OrderController {
   async GetOrders(req: Request, res: Response){
-    const orderService = new OrderService();
+    const orderRepository = new PrismaOrderRepository();
+    const orderService = new OrderService(orderRepository);
 
     try{
 
