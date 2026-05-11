@@ -17,4 +17,9 @@ export class OrderService {
     const order = await this.orderRepository.create(data);
     return order;
   }
+
+  async DeleteOrder(id:string){
+    const order = await this.orderRepository.delete(id);
+    return order;
+  }
 }
