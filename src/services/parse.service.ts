@@ -1,26 +1,42 @@
 import { prisma } from "../config/prisma";
+import { GoogleGenAI } from "@google/genai";
 
 export class ParserService{
-  async execute(message: string){
-    const parsedData = {
-      customerName: "João",
-      customerPhone: "67999999999",
-      address: "Rua A, 123",
-      paymentMethod: "pix",
-      items: [
-        {
-          productName: "Pizza",
-          quantity: 2,
-          unitPrice: 30,
-          totalPrice: 60,
-        },
-      ],
-      total: 60,
-    };
+
+
+
+  async execute(message: string, userId: string){
+
+    interface IItem {
+      productName: string;
+      quantity: number;
+      unitPrice: number;
+      totalPrice: number;
+    }
+
+    interface IParsedDataType {
+      customerName: string;
+      customerPhone: string;
+      address: string;
+      paymentMethod: string;
+      items: IItem[];
+      total: number;
+    }
+
+    const ai = new GoogleGenAI({});
+    const response = await ai.models.generateContent({
+      model: "gemini-3-flash-preview",
+      contents: "Extraia os dados da conversa de WhatsApp abaixo e retorne apenas o JSON no formato: {\"customerName\":\"Nome\",\"customerPhone\":\"Telefone\",\"address\":\"Endereço\",\"paymentMethod\":\"Forma de pagamento\",\"items\":[{\"productName\":\"Produto\",\"quantity\":0,\"unitPrice\":0.00,\"totalPrice\":0.00}],\"total\":0.00}. Regras: Use totalPrice = quantity * unitPrice; Se faltar telefone ou endereço, use 'N/A'; Retorne apenas o código, sem textos explicativos. Conversa: " + message,
+    })
+
+    console.log(response.text);
+
+    const parsedData: IParsedDataType = JSON.parse(response.text || "{}");
+
 
     const order = await prisma.order.create({
       data: {
-        userId: "4f92a1b7-8e5c-4d32-9c1a-6f8b2d0e4a91",
+        userId: userId,
         customerName: parsedData.customerName,
         customerPhone: parsedData.customerPhone,
         address: parsedData.address,
