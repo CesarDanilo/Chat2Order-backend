@@ -3,8 +3,6 @@ import { GoogleGenAI } from "@google/genai";
 
 export class ParserService{
 
-
-
   async execute(message: string, userId: string){
 
     interface IItem {
@@ -26,7 +24,7 @@ export class ParserService{
     const ai = new GoogleGenAI({});
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
-      contents: "Extraia os dados da conversa de WhatsApp abaixo e retorne apenas o JSON no formato: {\"customerName\":\"Nome\",\"customerPhone\":\"Telefone\",\"address\":\"Endereço\",\"paymentMethod\":\"Forma de pagamento\",\"items\":[{\"productName\":\"Produto\",\"quantity\":0,\"unitPrice\":0.00,\"totalPrice\":0.00}],\"total\":0.00}. Regras: Use totalPrice = quantity * unitPrice; Se faltar telefone ou endereço, use 'N/A'; Retorne apenas o código, sem textos explicativos. Conversa: " + message,
+      contents: "Extraia os dados da conversa de WhatsApp abaixo e retorne apenas o JSON no formato: {\"customerName\":\"Nome\",\"customerPhone\":\"Telefone\",\"address\":\"Endereço\",\"paymentMethod\":\"Forma de pagamento\",\"items\":[{\"productName\":\"Produto\",\"quantity\":0,\"unitPrice\":0.00,\"totalPrice\":0.00}],\"total\":0.00}. Regras: Use totalPrice = quantity * unitPrice; Se faltar telefone ou endereço, use 'N/A'; Retorne apenas o código, sem textos explicativos. Responda apenas com o JSON purificado. Não use blocos de código markdown. Conversa: " + message,
     })
 
     console.log(response.text);
