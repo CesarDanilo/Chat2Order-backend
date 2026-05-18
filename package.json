@@ -37,7 +37,7 @@
     "@types/node": "^25.6.0",
     "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
-    "jest": "^30.3.0",P
+    "jest": "^30.3.0",
     "nodemon": "^3.1.14",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
