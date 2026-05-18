@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+
+  orders    Order[]
+
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id            String   @id @default(uuid())
+
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+
+  customerName  String
+  customerPhone String?
+  address       String?
+  paymentMethod String?
+
+  status        String   // pending, preparing, sent, delivered
+  total         Float
+  source        String
+  rawMessage    String?
+
+  items         OrderItem[]
+  history       OrderStatusHistory[]
+  aiLogs        AILog[]
+
+  createdAt     DateTime @default(now())
+}
+
+model OrderItem {
+  id          String  @id @default(uuid())
+
+  orderId     String
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  productName String
+  quantity    Int
+  unitPrice   Float
+  totalPrice  Float
+}
+
+model OrderStatusHistory {
+  id        String   @id @default(uuid())
+
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id])
+
+  status    String
+  changedAt DateTime @default(now())
+}
+
+model AILog {
+  id           String   @id @default(uuid())
+
+  orderId      String?
+  order        Order?   @relation(fields: [orderId], references: [id])
+
+  inputText    String
+  aiResponse   Json?
+
+  success      Boolean
+  errorMessage String?
+
+  createdAt    DateTime @default(now())
+}
