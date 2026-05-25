@@ -18,6 +18,8 @@ model User {
   email     String   @unique
   password  String
 
+  admin     Boolean  @default(false)
+
   orders    Order[]
 
   createdAt DateTime @default(now())
