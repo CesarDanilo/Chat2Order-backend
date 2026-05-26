@@ -19,37 +19,47 @@ export class ParserService {
       total: number;
     }
 
-    const ai = new GoogleGenAI({});
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents:
-        'Extraia os dados da conversa de WhatsApp abaixo e retorne apenas o JSON no formato: {"customerName":"Nome","customerPhone":"Telefone","address":"Endereço","paymentMethod":"Forma de pagamento","items":[{"productName":"Produto","quantity":0,"unitPrice":0.00,"totalPrice":0.00}],"total":0.00}. Regras: Use totalPrice = quantity * unitPrice; Se faltar telefone ou endereço, use \'N/A\'; Retorne apenas o código, sem textos explicativos. Responda apenas com o JSON purificado. Não use blocos de código markdown. Conversa: ' +
-        message,
-    });
+    try {
+      const ai = new GoogleGenAI({});
+      const response = await ai.models.generateContent({
+        model: "gemini-3-flash-preview",
+        contents:
+          'Extraia os dados da conversa de WhatsApp abaixo e retorne apenas o JSON no formato: {"customerName":"Nome","customerPhone":"Telefone","address":"Endereço","paymentMethod":"Forma de pagamento","items":[{"productName":"Produto","quantity":0,"unitPrice":0.00,"totalPrice":0.00}],"total":0.00}. Regras: Use totalPrice = quantity * unitPrice; Se faltar telefone ou endereço, use \'N/A\'; Retorne apenas o código, sem textos explicativos. Responda apenas com o JSON purificado. Não use blocos de código markdown. Conversa: ' +
+          message,
+      });
 
-    const parsedData: IParsedDataType = JSON.parse(response.text || "{}");
+      const parsedData: IParsedDataType = JSON.parse(response.text || "{}");
 
-    const order = await prisma.order.create({
-      data: {
-        userId: userId,
-        customerName: parsedData.customerName || "sem nome",
-        customerPhone: parsedData.customerPhone || "(00) 0 0000-0000",
-        address: parsedData.address || "sem endereço",
-        paymentMethod: parsedData.paymentMethod || "PIX",
-        status: "PENDENTE",
-        total: parsedData.total,
-        source: "WHATSAPP",
-        rawMessage: message,
+      const order = await prisma.order.create({
+        data: {
+          userId: userId,
+          customerName: parsedData.customerName || "sem nome",
+          customerPhone: parsedData.customerPhone || "(00) 0 0000-0000",
+          address: parsedData.address || "sem endereço",
+          paymentMethod: parsedData.paymentMethod || "PIX",
+          status: "PENDENTE",
+          total: parsedData.total,
+          source: "WHATSAPP",
+          rawMessage: message,
 
-        items: {
-          create: parsedData.items,
+          items: {
+            create: parsedData.items,
+          },
         },
-      },
-      include: {
-        items: true,
-      },
-    });
+        include: {
+          items: true,
+        },
+      });
 
-    return order;
+      return order;
+    } catch (error: any) {
+      if (error.status === 503) {
+        throw new Error(
+          "A IA está temporariamente sobrecarregada. Tente novamente em alguns segundos.",
+        );
+      }
+
+      throw new Error("Erro ao processar mensagem com IA.");
+    }
   }
 }
