@@ -24,7 +24,13 @@ export interface CreateOrderInput {
 }
 
 export interface IOrderRepository {
-  findMany(userId: string): Promise<OrderWithItems[] | null>;
-  create(data: CreateOrderInput): Promise<Order | null>;
-  delete(id: string): Promise<Order | null> 
+  findManyByUserId(userId: string): Promise<Order[]>;
+
+  findById(orderId: string): Promise<Order | null>;
+
+  update(orderId: string, data: CreateOrderInput): Promise<Order>;
+
+  create(data: CreateOrderInput): Promise<Order>;
+
+  delete(id: string): Promise<Order>;
 }
