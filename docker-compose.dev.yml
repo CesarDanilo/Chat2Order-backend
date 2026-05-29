@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:16
+
+    container_name: chat2order_postgres
+
+    restart: always
+
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: chat2order
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d chat2order"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      target: builder
+
+    container_name: chat2order_api
+
+    restart: always
+
+    ports:
+      - "3000:3000"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    env_file:
+      - .env
+
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+    command: npm run dev
+
+volumes:
+  postgres_data:

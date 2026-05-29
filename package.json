@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx jest",
-    "dev": "nodemon src/server.ts"
+    "dev": "tsx watch src/server.ts",
+    "build": "tsup src/server.ts --format cjs --out-dir dist",
+    "start": "node dist/server.js",
+    "test": "npx jest"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +21,9 @@
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
     "groq-sdk": "^1.2.1",
+    "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0",
     "prisma": "^7.8.0",
@@ -42,6 +46,8 @@
     "nodemon": "^3.1.14",
     "ts-jest": "^29.4.9",
     "ts-node": "^10.9.2",
+    "tsup": "^8.5.1",
+    "tsx": "^4.22.3",
     "typescript": "^6.0.3"
   }
 }
