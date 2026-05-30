@@ -23,14 +23,13 @@ const app = express();
  * =========================
  */
 app.use(helmet());
-console.log("CORS CONFIG LOADED");
-app.use(
-  cors({
-    origin: "*",
-    credentials: true,
-  })
-);
-app.options("*", cors());
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://chat2order-frontend.vercel.app"
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 /**

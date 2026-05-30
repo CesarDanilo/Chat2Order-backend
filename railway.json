@@ -1,5 +1,9 @@
 {
   "build": {
     "builder": "DOCKERFILE"
+  },
+  "deploy": {
+    "preDeployCommand": "npx prisma migrate deploy",
+    "startCommand": "node dist/server.js"
   }
 }
