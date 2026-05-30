@@ -28,7 +28,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "chat2order-frontend.vercel.app"
+      "https://chat2order-frontend.vercel.app"
     ], 
     credentials: true,
   })
