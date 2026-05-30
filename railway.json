@@ -1,0 +1,8 @@
+{
+  "build": {
+    "builder": "DOCKERFILE"
+  },
+  "deploy": {
+    "startCommand": "node dist/server.js"
+  }
+}
