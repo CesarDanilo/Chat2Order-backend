@@ -26,7 +26,10 @@ app.use(helmet());
 
 app.use(
   cors({
-    origin: ["http://localhost:5173"], // depois trocar para domínio real
+    origin: [
+      "http://localhost:5173",
+      "chat2order-frontend.vercel.app"
+    ], 
     credentials: true,
   })
 );
