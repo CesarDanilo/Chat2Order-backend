@@ -23,8 +23,11 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 
 // src/app.ts
+var import_config2 = require("dotenv/config");
 var import_express5 = __toESM(require("express"));
 var import_cors = __toESM(require("cors"));
+var import_helmet = __toESM(require("helmet"));
+var import_express_rate_limit = __toESM(require("express-rate-limit"));
 
 // src/routes/parse.routes.ts
 var import_express = require("express");
@@ -563,25 +566,55 @@ var swaggerOptions = {
 
 // src/app.ts
 var app = (0, import_express5.default)();
-app.use((0, import_cors.default)());
+app.use((0, import_helmet.default)());
+console.log("CORS CONFIG LOADED");
+app.use(
+  (0, import_cors.default)({
+    origin: "*",
+    credentials: true
+  })
+);
+app.options("*", (0, import_cors.default)());
 app.use(import_express5.default.json());
+var limiter = (0, import_express_rate_limit.default)({
+  windowMs: 15 * 60 * 1e3,
+  // 15 minutos
+  max: 100,
+  // limite por IP
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    error: "Too many requests, try again later."
+  }
+});
+app.use(limiter);
+app.get("/health", (req, res) => {
+  return res.status(200).json({
+    status: "ok",
+    uptime: process.uptime()
+  });
+});
 var swaggerDocs = (0, import_swagger_jsdoc.default)(swaggerOptions);
 app.use(
   "/docs",
   import_swagger_ui_express.default.serve,
-  import_swagger_ui_express.default.setup(swaggerDocs)
+  import_swagger_ui_express.default.setup(swaggerDocs, {
+    explorer: true
+  })
 );
 app.use("/api", parse_routes_default);
 app.use("/api", user_routes_default);
 app.use("/api", auth_routes_default);
 app.use("/api", order_routes_default);
 app.get("/", (req, res) => {
-  res.send("API Chat2Order rodando \u{1F680}");
+  res.status(200).send("API Chat2Order rodando \u{1F680}");
 });
 var app_default = app;
 
 // src/server.ts
+var import_config3 = require("dotenv/config");
 var PORT = process.env.PORT || 3e3;
+console.log("\u{1F680} EXPRESS INICIANDO...");
 app_default.listen(PORT, () => {
   console.log(`\u{1F680} Server running on port http://localhost:${PORT}`);
 });

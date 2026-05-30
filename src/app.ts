@@ -96,4 +96,5 @@ app.get("/", (req, res) => {
   res.status(200).send("API Chat2Order rodando 🚀");
 });
 
+console.log("APP CONFIGURED");
 export default app;
