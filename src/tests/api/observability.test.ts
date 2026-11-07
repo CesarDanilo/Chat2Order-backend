@@ -37,7 +37,7 @@ describe("id da requisição", () => {
 
   it.each([
     ["com caracteres não permitidos", "<script>"],
-    ["com quebra de linha", "abc\ndef"],
+    ["com espaço", "abc def"],
     ["longo demais", "a".repeat(65)],
   ])("troca um id %s", async (_label, id) => {
     const response = await request(app).get("/health").set("X-Request-Id", id);
