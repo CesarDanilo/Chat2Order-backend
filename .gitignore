@@ -2,3 +2,6 @@ node_modules
 # Keep environment variables out of version control
 .env
 .env.test
+
+# Gerado pelo build (tsup); o Docker compila dentro da imagem.
+dist
