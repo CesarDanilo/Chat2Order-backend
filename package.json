@@ -7,7 +7,7 @@
     "dev": "tsx watch src/server.ts",
     "build": "tsup src/server.ts --format cjs --out-dir dist",
     "start": "node dist/server.js",
-    "test": "jest",
+    "test": "jest --runInBand",
     "test:unit": "jest --selectProjects unit",
     "test:api": "jest --selectProjects api --runInBand",
     "typecheck": "tsc --noEmit",
