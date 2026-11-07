@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { ProductsController } from "../controllers/products.controller";
-import { authMiddleware } from "../modules/auth/presentation/authMiddleware";
-import { validate } from "../shared/http/validate";
-import { idParams, paginationQuery } from "../shared/validation/common";
-import { createProductSchema, updateProductSchema } from "../schemas/product.schema";
+import { ProductsController } from "./products.controller";
+import { authMiddleware } from "../../auth/presentation/authMiddleware";
+import { validate } from "../../../shared/http/validate";
+import { idParams, paginationQuery } from "../../../shared/validation/common";
+import { createProductSchema, updateProductSchema } from "./product.schema";
 
 const router = Router();
 const productsController = new ProductsController();

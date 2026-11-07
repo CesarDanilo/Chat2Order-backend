@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { AppError } from "../shared/errors/AppError";
-import { PrismaProductsRepository } from "../repository/PrismaProductsRepository";
-import { ProductServices } from "../services/products.service";
+import { AppError } from "../../../shared/errors/AppError";
+import { PrismaProductsRepository } from "../infrastructure/PrismaProductsRepository";
+import { ProductServices } from "../application/products.service";
 
 const productNotFound = () => new AppError(404, "NOT_FOUND", "Produto não encontrado");
 

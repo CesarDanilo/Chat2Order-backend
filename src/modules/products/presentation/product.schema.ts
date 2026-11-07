@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { LIMITS, money, text } from "../shared/validation/common";
+import { LIMITS, money, text } from "../../../shared/validation/common";
 
 const productFields = {
   name: text({ label: "o nome do produto", max: LIMITS.productName }),

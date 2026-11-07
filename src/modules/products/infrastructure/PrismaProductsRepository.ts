@@ -1,7 +1,7 @@
-import { prisma } from "../shared/database/prisma";
-import { IProductRepository, CreateProducts, UpdateProducts } from "../interfaces/IProductsRepository";
-import { Pagination, toSkipTake } from "../shared/validation/common";
-import { nullIfNotFound } from "../shared/database/prismaErrors";
+import { prisma } from "../../../shared/database/prisma";
+import { IProductRepository, CreateProducts, UpdateProducts } from "../domain/IProductsRepository";
+import { Pagination, toSkipTake } from "../../../shared/validation/common";
+import { nullIfNotFound } from "../../../shared/database/prismaErrors";
 
 // Só estes campos vêm do corpo da requisição: o dono nunca é aceito dele.
 function toProductFields(data: UpdateProducts) {

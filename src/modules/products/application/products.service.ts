@@ -1,5 +1,5 @@
-import { IProductRepository, CreateProducts, UpdateProducts } from "../interfaces/IProductsRepository";
-import { Pagination } from "../shared/validation/common";
+import { IProductRepository, CreateProducts, UpdateProducts } from "../domain/IProductsRepository";
+import { Pagination } from "../../../shared/validation/common";
 
 
 export class ProductServices {
