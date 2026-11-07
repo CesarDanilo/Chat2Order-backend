@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { UserController } from "../controllers/user.controller";
-import { authMiddleware, guardRoleChange, requireAdmin, requireSelfOrAdmin } from "../middleware/authUser";
+import { authMiddleware, guardRoleChange, requireAdmin, requireSelfOrAdmin } from "../modules/auth/presentation/authMiddleware";
 import { validate } from "../shared/http/validate";
 import { registerLimiter } from "../shared/http/rateLimits";
 import { idParams, paginationQuery } from "../shared/validation/common";

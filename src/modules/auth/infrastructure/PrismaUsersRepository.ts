@@ -1,8 +1,8 @@
-import { prisma } from "../shared/database/prisma";
+import { prisma } from "../../../shared/database/prisma";
 import {
   IUserRepository,
   CreateUserDTO
-} from "../interfaces/IUserRepository";
+} from "../domain/IUserRepository";
 
 export class PrismaUsersRepository implements IUserRepository {
 

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { ProductsController } from "../controllers/products.controller";
-import { authMiddleware } from "../middleware/authUser";
+import { authMiddleware } from "../modules/auth/presentation/authMiddleware";
 import { validate } from "../shared/http/validate";
 import { idParams, paginationQuery } from "../shared/validation/common";
 import { createProductSchema, updateProductSchema } from "../schemas/product.schema";

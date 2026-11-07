@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { AppError } from "../shared/errors/AppError";
-import { PrismaUsersRepository } from "../repository/PrismaUsersRepository";
-import { isRevoked, readToken } from "../services/auth/sessionService";
+import { AppError } from "../../../shared/errors/AppError";
+import { PrismaUsersRepository } from "../infrastructure/PrismaUsersRepository";
+import { isRevoked, readToken } from "../application/sessionService";
 
 const BEARER_TOKEN = /^Bearer ([A-Za-z0-9\-_.]{1,2048})$/;
 

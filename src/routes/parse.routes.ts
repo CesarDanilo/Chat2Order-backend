@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { ParseController } from "../controllers/parse.controller";
-import { authMiddleware } from "../middleware/authUser";
+import { authMiddleware } from "../modules/auth/presentation/authMiddleware";
 import { parseLimiter } from "../shared/http/rateLimits";
 import { validate } from "../shared/http/validate";
 import { parseMessageSchema } from "../schemas/parse.schema";

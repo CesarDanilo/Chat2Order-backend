@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
-import { FakeUsersRepository } from "../../repository/FakeUsersRepository"; 
-import { AuthenticateUserService } from "../../services/auth/AuthenticateUserService";
+import { FakeUsersRepository } from "../../modules/auth/infrastructure/FakeUsersRepository"; 
+import { AuthenticateUserService } from "../../modules/auth/application/AuthenticateUserService";
 
 describe('AuthenticateUserService', () => {
 

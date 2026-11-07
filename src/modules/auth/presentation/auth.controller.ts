@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { AuthenticateUserService } from "../../services/auth/AuthenticateUserService";
-import { revoke } from "../../services/auth/sessionService";
-import { PrismaUsersRepository } from "../../repository/PrismaUsersRepository";
+import { AuthenticateUserService } from "../application/AuthenticateUserService";
+import { revoke } from "../application/sessionService";
+import { PrismaUsersRepository } from "../infrastructure/PrismaUsersRepository";
 
 export async function AuthenticateUserController(req: Request, res: Response) {
   const { email, password } = req.body;

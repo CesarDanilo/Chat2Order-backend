@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { AuthenticateUserController, LogoutController } from '../../controllers/auth/auth.controller';
-import { authMiddleware } from '../../middleware/authUser';
-import { loginLimiter } from '../../shared/http/rateLimits';
-import { validate } from '../../shared/http/validate';
-import { loginSchema } from '../../schemas/user.schema';
+import { AuthenticateUserController, LogoutController } from './auth.controller';
+import { authMiddleware } from './authMiddleware';
+import { loginLimiter } from '../../../shared/http/rateLimits';
+import { validate } from '../../../shared/http/validate';
+import { loginSchema } from './auth.schema';
 
 const router = Router();
 

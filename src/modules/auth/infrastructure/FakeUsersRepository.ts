@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import {
   IUserRepository,
   CreateUserDTO
-} from "../interfaces/IUserRepository";
+} from "../domain/IUserRepository";
 
 export class FakeUsersRepository
   implements IUserRepository {

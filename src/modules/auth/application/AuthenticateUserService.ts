@@ -1,6 +1,6 @@
 import { randomBytes } from "node:crypto";
-import { AppError } from "../../shared/errors/AppError";
-import { IUserRepository } from "../../interfaces/IUserRepository";
+import { AppError } from "../../../shared/errors/AppError";
+import { IUserRepository } from "../domain/IUserRepository";
 import bcrypt from "bcrypt";
 import { issueToken } from "./sessionService";
 
