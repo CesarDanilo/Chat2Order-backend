@@ -1,7 +1,7 @@
 jest.mock("../../shared/database/prisma", () => ({ prisma: {} }));
 
-import { UserController } from "../../controllers/user.controller";
-import { UserService } from "../../services/user.service";
+import { UserController } from "../../modules/users/presentation/user.controller";
+import { UserService } from "../../modules/users/application/user.service";
 
 describe('Create User', () => {
   beforeEach(() => {

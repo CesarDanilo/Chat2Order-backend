@@ -5,7 +5,7 @@ import cors from "cors";
 import helmet from "helmet";
 
 import parseRoutes from "../routes/parse.routes";
-import userRoutes from "../routes/user.routes";
+import userRoutes from "../modules/users/presentation/user.routes";
 import authRoutes from "../modules/auth/presentation/auth.routes";
 import orderRoutes from "../routes/order.routes";
 import productRoutes from "../routes/products.routes"

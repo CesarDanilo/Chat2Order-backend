@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { AppError } from "../shared/errors/AppError";
-import { UserService } from "../services/user.service";
+import { AppError } from "../../../shared/errors/AppError";
+import { UserService } from "../application/user.service";
 
 export class UserController{
   async CreateUserController(req: Request, res: Response) {
