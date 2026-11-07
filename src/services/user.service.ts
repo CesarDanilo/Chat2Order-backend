@@ -83,6 +83,8 @@ export class UserService{
         password: userdata.password
           ? await bcrypt.hash(userdata.password, 10)
           : undefined,
+        // Senha nova encerra todas as sessões abertas com a anterior.
+        tokenVersion: userdata.password ? { increment: 1 } : undefined,
       },
       select: publicUserFields,
     });

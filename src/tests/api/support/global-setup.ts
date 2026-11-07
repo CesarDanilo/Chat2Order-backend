@@ -32,7 +32,7 @@ async function clearData(testUrl: string) {
 
   try {
     await client.query(
-      'TRUNCATE "OrderItem", "OrderStatusHistory", "AILog", "Order", "Product", "User" CASCADE',
+      'TRUNCATE "OrderItem", "OrderStatusHistory", "AILog", "Order", "Product", "User", "RevokedToken" CASCADE',
     );
   } finally {
     await client.end();

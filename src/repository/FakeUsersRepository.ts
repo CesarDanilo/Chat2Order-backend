@@ -15,6 +15,7 @@ export class FakeUsersRepository
     const user: User = {
       id: randomUUID(),
       admin: false,
+      tokenVersion: 0,
       ...data,
     };
 

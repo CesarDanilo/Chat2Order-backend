@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import jwt from "jsonwebtoken";
 import { AppError } from "../errors/AppError";
 import { PrismaUsersRepository } from "../repository/PrismaUsersRepository";
+import { isRevoked, readToken } from "../services/auth/sessionService";
 
 const BEARER_TOKEN = /^Bearer ([A-Za-z0-9\-_.]{1,2048})$/;
 
@@ -11,29 +11,22 @@ const unauthorized = () =>
 const forbidden = () =>
   new AppError(403, "FORBIDDEN", "Você não tem permissão para esta ação.");
 
-function readSubject(token: string) {
-  try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET!, { algorithms: ["HS256"] });
-
-    return typeof payload === "object" ? payload.sub : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
-// A cada requisição confere se a conta existe e lê o papel do banco: excluir uma conta ou
-// retirar o admin vale na hora, sem esperar o token expirar.
+// A cada requisição confere conta, papel, versão da senha e logout no banco: excluir a conta,
+// retirar o admin, trocar a senha ou sair valem na hora, sem esperar o token expirar.
 export async function authMiddleware(req: Request, _res: Response, next: NextFunction) {
   const token = BEARER_TOKEN.exec(req.headers.authorization ?? "")?.[1];
-  const subject = token && readSubject(token);
+  const session = token ? readToken(token) : null;
 
-  if (!subject) throw unauthorized();
+  if (!session) throw unauthorized();
 
-  const user = await new PrismaUsersRepository().findById(subject);
+  const user = await new PrismaUsersRepository().findById(session.userId);
 
-  if (!user) throw unauthorized();
+  if (!user || user.tokenVersion !== session.tokenVersion || (await isRevoked(session.jti))) {
+    throw unauthorized();
+  }
 
   (req as any).user = { id: user.id, admin: user.admin };
+  (req as any).session = session;
 
   next();
 }

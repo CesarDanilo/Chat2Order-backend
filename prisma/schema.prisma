@@ -20,6 +20,9 @@ model User {
 
   admin     Boolean  @default(false)
 
+  // Trocar a senha incrementa a versão e invalida todos os tokens já emitidos.
+  tokenVersion Int    @default(0)
+
   orders    Order[]
   products  Product[] 
 
@@ -103,8 +106,9 @@ model AILog {
 model Product {
   id          String   @id @default(uuid())
 
-  userId      String 
-  user        User     @relation(fields: [userId], references: [id])  
+  // Opcional como no banco: produtos antigos podem não ter dono e ficam invisíveis na API.
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
 
   name        String
@@ -119,4 +123,12 @@ model Product {
   updatedAt   DateTime @updatedAt
 
   @@index([userId])
+}
+
+// Sessões encerradas por logout. Expiradas são removidas a cada novo logout.
+model RevokedToken {
+  jti       String   @id
+  expiresAt DateTime
+
+  @@index([expiresAt])
 }

@@ -107,7 +107,7 @@ describe("SEC-01/SEC-06: permissões entre usuários", () => {
     const response = await request(app)
       .put(`/api/user/${user.id}`)
       .set("Authorization", bearer(user))
-      .send({ name: "Novo Nome", email: user.email, password: PASSWORD })
+      .send({ name: "Novo Nome", email: user.email })
       .expect(200);
 
     expect(response.body.name).toBe("Novo Nome");
@@ -117,7 +117,7 @@ describe("SEC-01/SEC-06: permissões entre usuários", () => {
     await request(app)
       .put(`/api/user/${user.id}`)
       .set("Authorization", bearer(user))
-      .send({ name: "Novo Nome", email: user.email, password: PASSWORD, admin: true })
+      .send({ name: "Novo Nome", email: user.email, admin: true })
       .expect(403);
 
     const stored = await prisma.user.findUnique({ where: { id: user.id } });
