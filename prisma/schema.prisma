@@ -38,7 +38,7 @@ model Order {
   paymentMethod String?
 
   status        String   // pending, preparing, sent, delivered
-  total         Float
+  total         Decimal  @db.Decimal(12, 2)
   source        String
   rawMessage    String?
 
@@ -47,6 +47,8 @@ model Order {
   aiLogs        AILog[]
 
   createdAt     DateTime @default(now())
+
+  @@index([userId, createdAt])
 }
 
 model OrderItem {
@@ -62,8 +64,11 @@ model OrderItem {
   // Produto avulso (quando não tem cadastro)
   productName String
   quantity    Int
-  unitPrice   Float
-  totalPrice  Float
+  unitPrice   Decimal  @db.Decimal(12, 2)
+  totalPrice  Decimal  @db.Decimal(12, 2)
+
+  @@index([orderId])
+  @@index([productId])
 }
 
 model OrderStatusHistory {
@@ -74,6 +79,8 @@ model OrderStatusHistory {
 
   status    String
   changedAt DateTime @default(now())
+
+  @@index([orderId])
 }
 
 model AILog {
@@ -89,6 +96,8 @@ model AILog {
   errorMessage String?
 
   createdAt    DateTime @default(now())
+
+  @@index([orderId])
 }
 
 model Product {
@@ -100,7 +109,7 @@ model Product {
 
   name        String
   description String?
-  price       Float
+  price       Decimal  @db.Decimal(12, 2)
   category    String?
   available   Boolean  @default(true)
 
@@ -108,4 +117,6 @@ model Product {
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  @@index([userId])
 }
