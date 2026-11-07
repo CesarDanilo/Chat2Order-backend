@@ -64,15 +64,16 @@ app.get("/health", (req, res) => {
  * SWAGGER
  * =========================
  */
-const swaggerDocs = swaggerJsdoc(swaggerOptions);
-
-app.use(
-  "/docs",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerDocs, {
-    explorer: true,
-  })
-);
+// Em produção a documentação não é exposta: ela descreve todas as rotas da API.
+if (process.env.NODE_ENV !== "production") {
+  app.use(
+    "/docs",
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerJsdoc(swaggerOptions), {
+      explorer: true,
+    })
+  );
+}
 
 /**
  * =========================
