@@ -8,7 +8,7 @@ describe("Order services", () => {
     customerPhone: "67991619198",
     address: "Rua dos Apeninos, 390, Jardim Itália",
     paymentMethod: "Pix",
-    status: "pending",
+    status: "PENDENTE",
     source: "whatsapp",
     total: 120.0,
     items: [
@@ -38,8 +38,8 @@ describe("Order services", () => {
 
     expect(order).toHaveProperty("id");
     expect(order?.customerName).toBe("Cesar Rodrigues");
-    expect(order?.total).toBe(120);
-    expect(order?.status).toBe("pending");
+    expect(Number(order?.total)).toBe(120);
+    expect(order?.status).toBe("PENDENTE");
   });
 
   it("should delete an order", async () => {
@@ -56,11 +56,21 @@ describe("Order services", () => {
 
     if (!createdOrder) return;
 
-    await orderService.DeleteOrder(createdOrder.id);
+    await orderService.DeleteOrder(createdOrder.id, data.userId);
 
-    const deletedOrder = await orderService.GetOrderById(createdOrder.id);
+    const deletedOrder = await orderService.GetOrderById(createdOrder.id, data.userId);
 
-    // Como seu método retorna array:
-    expect(deletedOrder).toHaveLength(0);
+    // GetOrderById devolve null quando o pedido não existe.
+    expect(deletedOrder).toBeNull();
+  });
+  it("does not expose an order to another owner", async () => {
+    const ordersRepository = new FakeOrdersRepository();
+    const orderService = new OrderService(ordersRepository);
+
+    const order = await orderService.CreateOrder(data, data.userId);
+
+    await expect(orderService.GetOrderById(order.id, "outro-dono")).resolves.toBeNull();
+    await expect(orderService.DeleteOrder(order.id, "outro-dono")).resolves.toBeNull();
+    await expect(orderService.GetOrderById(order.id, data.userId)).resolves.not.toBeNull();
   });
 });

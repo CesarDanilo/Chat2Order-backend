@@ -1,3 +1,5 @@
+jest.mock("../../config/prisma", () => ({ prisma: {} }));
+
 import { UserController } from "../../controllers/user.controller";
 import { UserService } from "../../services/user.service";
 
@@ -26,8 +28,8 @@ describe('Create User', () => {
         id: '1',
         name: 'test',
         email: 'test@test.com',
-        password: 'password',
-        createdAt: new Date()
+        createdAt: new Date(),
+        admin: false
       } );
 
     const userController = new UserController();
@@ -54,8 +56,8 @@ describe('Create User', () => {
       id: "4f92a1b7-8e5c-4d32-9c1a-6f8b2d0e4a91",
       name: "cesar",
       email: "cesar@gmail.com",
-      password: "123456789",
-      createdAt: new Date()
+      createdAt: new Date(),
+      admin: false
     };
 
     jest.spyOn(UserService.prototype, 'DeleteUserById')
@@ -76,8 +78,12 @@ describe('Create User', () => {
 
     const res: any = {
       status: jest.fn().mockReturnThis(),
-      json: jest.fn()
+      json: jest.fn(),
+      setHeader: jest.fn(),
+      locals: { query: { page: 1, limit: 500 } }
     };
+
+    jest.spyOn(UserService.prototype, 'GetAllUsers').mockResolvedValue({ users: [], total: 0 });
 
     const userController = new UserController();
     await userController.GetAllUsersController(req, res);
@@ -102,8 +108,8 @@ describe('Create User', () => {
       id: "4f92a1b7-8e5c-4d32-9c1a-6f8b2d0e4a91",
       name: "cesar",
       email: "cesar@gmail.com",
-      password: "123456789",
-      createdAt: new Date()
+      createdAt: new Date(),
+      admin: false
     };
 
     jest.spyOn(UserService.prototype, 'GetUserById')
@@ -123,7 +129,8 @@ describe('Create User', () => {
       name: 'João',
       email: 'joao@email',
       password: '123456',
-      createdAt: new Date()
+      createdAt: new Date(),
+      admin: false
     };
 
     const req: any = {
@@ -137,7 +144,13 @@ describe('Create User', () => {
     };
 
     jest.spyOn(UserService.prototype, 'UpdateUserById')
-      .mockResolvedValue({ id: '1', ...userData });
+      .mockResolvedValue({
+        id: '1',
+        name: userData.name,
+        email: userData.email,
+        createdAt: userData.createdAt,
+        admin: false,
+      });
 
     const userController = new UserController();
 
@@ -149,8 +162,8 @@ describe('Create User', () => {
       id: '1',
       name: userData.name,
       email: userData.email,
-      password: userData.password,
       createdAt: userData.createdAt,
+      admin: false,
     });
   });
 
@@ -177,13 +190,8 @@ describe('Create User', () => {
 
     const userController = new UserController();
 
-    await userController.UpdateUserByIdController(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(404);
-
-    expect(res.json).toHaveBeenCalledWith({
-      message: 'User not found'
-    });
+    await expect(userController.UpdateUserByIdController(req, res)).rejects.toThrow('User not found');
+    expect(res.json).not.toHaveBeenCalled();
   });
 
   it('Deve retornar 500 em erro interno do servidor', async () => {
@@ -209,12 +217,7 @@ describe('Create User', () => {
 
     const userController = new UserController();
 
-    await userController.UpdateUserByIdController(req, res);
-
-    expect(res.status).toHaveBeenCalledWith(500);
-
-    expect(res.json).toHaveBeenCalledWith({
-      message: 'Erro interno'
-    });
+    await expect(userController.UpdateUserByIdController(req, res)).rejects.toThrow('Erro interno');
+    expect(res.json).not.toHaveBeenCalled();
   });
 });

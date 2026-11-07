@@ -1,14 +1,17 @@
 import { Router } from "express";
 import { OrderController } from "../controllers/order.controller";
 import { authMiddleware } from "../middleware/authUser";
+import { validate } from "../middleware/validate";
+import { idParams, paginationQuery } from "../schemas/common";
+import { orderSchema } from "../schemas/order.schema";
 
 const router = Router();
 const orderController = new OrderController();
 
-router.get("/order", authMiddleware, orderController.GetOrders);
-router.get("/order/{:id}", authMiddleware, orderController.GetOrderById);
-router.post("/order", authMiddleware, orderController.CreateOrder);
-router.put("/order/{:id}", authMiddleware, orderController.UpdateOrder);
-router.delete("/order/{:id}", authMiddleware, orderController.DeleteOrder);
+router.get("/order", authMiddleware, validate({ query: paginationQuery }), orderController.GetOrders);
+router.get("/order/{:id}", authMiddleware, validate({ params: idParams }), orderController.GetOrderById);
+router.post("/order", authMiddleware, validate({ body: orderSchema }), orderController.CreateOrder);
+router.put("/order/{:id}", authMiddleware, validate({ params: idParams, body: orderSchema }), orderController.UpdateOrder);
+router.delete("/order/{:id}", authMiddleware, validate({ params: idParams }), orderController.DeleteOrder);
 
 export default router;

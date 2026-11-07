@@ -1,5 +1,10 @@
 import { Router } from "express";
 import { UserController } from "../controllers/user.controller";
+import { authMiddleware, guardRoleChange, requireAdmin, requireSelfOrAdmin } from "../middleware/authUser";
+import { validate } from "../middleware/validate";
+import { registerLimiter } from "../middleware/rateLimits";
+import { idParams, paginationQuery } from "../schemas/common";
+import { createUserSchema, updateUserSchema } from "../schemas/user.schema";
 
 const router = Router();
 
@@ -90,7 +95,7 @@ const controllerUser = new UserController();
  *       500:
  *         description: Erro interno do servidor
  */
-router.post("/user", controllerUser.CreateUserController);
+router.post("/user", validate({ body: createUserSchema }), registerLimiter, controllerUser.CreateUserController);
 
 /**
  * @swagger
@@ -116,7 +121,7 @@ router.post("/user", controllerUser.CreateUserController);
  *       500:
  *         description: Erro interno do servidor
  */
-router.get("/user", controllerUser.GetAllUsersController);
+router.get("/user", authMiddleware, validate({ query: paginationQuery }), requireAdmin, controllerUser.GetAllUsersController);
 
 /**
  * @swagger
@@ -147,7 +152,7 @@ router.get("/user", controllerUser.GetAllUsersController);
  *       404:
  *         description: Usuário não encontrado
  */
-router.get("/user/:id", controllerUser.GetUserByIdController);
+router.get("/user/:id", authMiddleware, validate({ params: idParams }), requireSelfOrAdmin, controllerUser.GetUserByIdController);
 
 /**
  * @swagger
@@ -173,7 +178,7 @@ router.get("/user/:id", controllerUser.GetUserByIdController);
  *       404:
  *         description: Usuário não encontrado
  */
-router.delete("/user/:id", controllerUser.DeleteUserByIdController);
+router.delete("/user/:id", authMiddleware, validate({ params: idParams }), requireSelfOrAdmin, controllerUser.DeleteUserByIdController);
 
 /**
  * @swagger
@@ -210,6 +215,13 @@ router.delete("/user/:id", controllerUser.DeleteUserByIdController);
  *       500:
  *         description: Erro interno do servidor
  */
-router.put("/user/:id", controllerUser.UpdateUserByIdController);
+router.put(
+  "/user/:id",
+  authMiddleware,
+  validate({ params: idParams, body: updateUserSchema }),
+  requireSelfOrAdmin,
+  guardRoleChange,
+  controllerUser.UpdateUserByIdController,
+);
 
 export default router;

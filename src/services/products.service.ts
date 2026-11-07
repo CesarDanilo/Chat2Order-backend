@@ -1,28 +1,33 @@
-import { prisma } from "../config/prisma";
 import { IProductRepository, CreateProducts, UpdateProducts } from "../interfaces/IProductsRepository";
+import { Pagination } from "../schemas/common";
 
 
 export class ProductServices {
-    constructor(private orderRepository: IProductRepository) { }
+    constructor(private productRepository: IProductRepository) { }
 
     async CreateProducts(data: CreateProducts, userId: string) {
         data.userId = userId;
-        return await this.orderRepository.create(data);
+        return await this.productRepository.create(data);
     }
 
-    async GetProductsByUser(userId: string) {
-        return await this.orderRepository.findAllByUser(userId);
+    async GetProductsByUser(userId: string, pagination: Pagination) {
+        const [products, total] = await Promise.all([
+            this.productRepository.findAllByUser(userId, pagination),
+            this.productRepository.countByUser(userId),
+        ]);
+
+        return { products, total };
     }
 
-    async UpdateProduct(id: string, data: UpdateProducts) {
-        return await this.orderRepository.update(id, data);
+    async UpdateProduct(id: string, ownerId: string, data: UpdateProducts) {
+        return await this.productRepository.updateForOwner(id, ownerId, data);
     }
 
-    async GetProductById(id: string) {
-        return await this.orderRepository.findById(id);
+    async GetProductById(id: string, ownerId: string) {
+        return await this.productRepository.findByIdForOwner(id, ownerId);
     }
 
-    async DeleteProductById(id: string) {
-        return await this.orderRepository.delete(id);
+    async DeleteProductById(id: string, ownerId: string) {
+        return await this.productRepository.deleteForOwner(id, ownerId);
     }
 }

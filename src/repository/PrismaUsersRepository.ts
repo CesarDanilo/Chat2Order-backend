@@ -13,10 +13,11 @@ export class PrismaUsersRepository implements IUserRepository {
     }
 
     async findByEmail(email: string) {
-      return prisma.user.findUnique({
+      return prisma.user.findFirst({
         where: {
-          email,
+          email: { equals: email, mode: "insensitive" },
         },
+        orderBy: { createdAt: "asc" },
       });
     }
 

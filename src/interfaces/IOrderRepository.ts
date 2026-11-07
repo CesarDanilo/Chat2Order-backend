@@ -1,4 +1,5 @@
 import { Order, OrderItem } from "@prisma/client";
+import { Pagination } from "../schemas/common";
 
 export type OrderWithItems = Order & {
   items: OrderItem[];
@@ -8,7 +9,8 @@ interface IItem {
   productName: string;
   quantity: number;
   unitPrice: number;
-  totalPrice: number;
+  totalPrice?: number;
+  productId?: string;
 }
 
 export interface CreateOrderInput {
@@ -19,18 +21,34 @@ export interface CreateOrderInput {
   source: string;
   address: string;
   paymentMethod: string;
+  rawMessage?: string | null;
   items: IItem[];
-  total: number;
+  total?: number;
 }
 
+export type StoredOrderInput = Omit<CreateOrderInput, "items" | "total"> & {
+  items: (IItem & { totalPrice: number })[];
+  total: number;
+};
+
+// Todo acesso por id exige o dono: não existe consulta de pedido sem ownerId.
 export interface IOrderRepository {
-  findManyByUserId(userId: string): Promise<Order[]>;
+  findManyByUserId(userId: string, pagination: Pagination): Promise<Order[]>;
 
-  findById(orderId: string): Promise<Order | null>;
+  countByUserId(userId: string): Promise<number>;
 
-  update(orderId: string, data: CreateOrderInput): Promise<Order>;
+  findByIdForOwner(orderId: string, ownerId: string): Promise<Order | null>;
 
-  create(data: CreateOrderInput): Promise<Order>;
+  updateForOwner(
+    orderId: string,
+    ownerId: string,
+    expectedStatus: string,
+    data: StoredOrderInput,
+  ): Promise<Order | null>;
 
-  delete(id: string): Promise<Order>;
+  create(data: StoredOrderInput): Promise<Order>;
+
+  deleteForOwner(orderId: string, ownerId: string): Promise<Order | null>;
+
+  countOwnedProducts(productIds: string[], ownerId: string): Promise<number>;
 }

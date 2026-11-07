@@ -1,115 +1,52 @@
 import { Request, Response } from "express";
-import { OrderService } from "../services/order.service";
+import { AppError } from "../errors/AppError";
 import { PrismaOrderRepository } from "../repository/PrismaOrderRepository";
+import { OrderService } from "../services/order.service";
+
+const orderNotFound = () => new AppError(404, "NOT_FOUND", "Pedido não encontrado");
+
+const createService = () => new OrderService(new PrismaOrderRepository());
+
+const ownerOf = (req: Request): string => (req as any).user.id;
+
+const orderId = (req: Request) => String(req.params.id);
 
 export class OrderController {
   async GetOrders(req: Request, res: Response) {
-    const orderRepository = new PrismaOrderRepository();
-    const orderService = new OrderService(orderRepository);
+    const { orders, total } = await createService().GetOrderByUserId(ownerOf(req), res.locals.query);
 
-    try {
-      const orders = await orderService.GetOrderByUserId((req as any).user.id);
-      return res.json(orders);
-    } catch (error: any) {
-      console.error("❌ Erro detalhado no OrderController:", error);
+    res.setHeader("X-Total-Count", total);
 
-      return res.status(500).json({
-        error: "Error processing order",
-        message: error.message,
-      });
-    }
+    return res.json(orders);
   }
 
   async GetOrderById(req: Request, res: Response) {
-    const orderRepository = new PrismaOrderRepository();
-    const orderService = new OrderService(orderRepository);
+    const order = await createService().GetOrderById(orderId(req), ownerOf(req));
 
-    try {
-      const id = String(req.params.id);
+    if (!order) throw orderNotFound();
 
-      const order = await orderService.GetOrderById(id);
-
-      if (!order) {
-        return res.status(404).json({
-          message: "Pedido não encontrado",
-        });
-      }
-
-      return res.json(order);
-    } catch (error: any) {
-      console.error("❌ Erro detalhado no OrderController:", error);
-
-      return res.status(500).json({
-        error: "Error processing order",
-        message: error.message,
-      });
-    }
+    return res.json(order);
   }
 
   async CreateOrder(req: Request, res: Response) {
-    const orderRepository = new PrismaOrderRepository();
-    const orderService = new OrderService(orderRepository);
+    const order = await createService().CreateOrder(req.body, ownerOf(req));
 
-    try {
-      const userId = (req as any).user.id;
-      const order = await orderService.CreateOrder(req.body, userId);
-      return res.json(order);
-    } catch (error: any) {
-      console.error("❌ Erro detalhado no OrderController:", error);
-
-      return res.status(500).json({
-        error: "Error processing order",
-        message: error.message,
-      });
-    }
+    return res.json(order);
   }
 
   async UpdateOrder(req: Request, res: Response) {
-    const orderRepository = new PrismaOrderRepository();
-    const orderService = new OrderService(orderRepository);
+    const order = await createService().UpdateOrder(orderId(req), ownerOf(req), req.body);
 
-    try {
-      const { id } = req.params;
+    if (!order) throw orderNotFound();
 
-      if (!id || Array.isArray(id)) {
-        return res.status(400).json({
-          error: "ID inválido",
-        });
-      }
-
-      const order = await orderService.UpdateOrder(id, req.body);
-
-      return res.json(order);
-    } catch (error: any) {
-      console.error(error);
-
-      return res.status(500).json({
-        error: "Erro ao atualizar pedido",
-        message: error.message,
-      });
-    }
+    return res.json(order);
   }
 
   async DeleteOrder(req: Request, res: Response) {
-    const orderRepository = new PrismaOrderRepository();
-    const orderService = new OrderService(orderRepository);
+    const deleted = await createService().DeleteOrder(orderId(req), ownerOf(req));
 
-    try {
-      const { id } = req.params as { id: string };
+    if (!deleted) throw orderNotFound();
 
-      if (!id) {
-        return res.status(400).json({ error: "Missing order ID" });
-      }
-
-      await orderService.DeleteOrder(id);
-
-      return res.status(200).json({ message: "Order deleted successfully" });
-    } catch (error: any) {
-      console.error("❌ Erro detalhado no OrderController:", error);
-      return res.status(500).json({
-        error: "Internal Server Error",
-        message: error.message,
-      });
-    }
+    return res.status(200).json({ message: "Order deleted successfully" });
   }
 }

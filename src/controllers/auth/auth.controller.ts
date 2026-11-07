@@ -3,20 +3,9 @@ import { AuthenticateUserService } from "../../services/auth/AuthenticateUserSer
 import { PrismaUsersRepository } from "../../repository/PrismaUsersRepository";
 
 export async function AuthenticateUserController(req: Request, res: Response) {
+  const { email, password } = req.body;
+  const authenticateUserService = new AuthenticateUserService(new PrismaUsersRepository());
+  const auth = await authenticateUserService.execute(email, password);
 
-  try {
-
-    const { email, password } = req.body;
-    const usersRepository = new PrismaUsersRepository();
-    const authenticateUserService = new AuthenticateUserService(usersRepository);
-    const auth = await authenticateUserService.execute(email, password);
-    return res.status(200).json(auth);
-
-  } catch {
-
-    return res.status(401).json({
-      message: "Invalid credentials",
-    });
-
-  }
+  return res.status(200).json(auth);
 }

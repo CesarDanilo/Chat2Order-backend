@@ -1,74 +1,90 @@
-import { prisma } from "../config/prisma";
 import bcrypt from "bcrypt";
- 
-interface Usertype {
-    id: string;
-    name: string;
-    email: string;
-    password: string;
-}
+import { prisma } from "../config/prisma";
+import { AppError } from "../errors/AppError";
+import { Pagination, toSkipTake } from "../schemas/common";
+import { CreateUserInput, UpdateUserInput } from "../schemas/user.schema";
 
-interface UsertypeUpdate {
-    name: string;
-    email: string;
-    password: string;
+// Lista fechada do que sai para a API: a senha nunca faz parte da resposta.
+const publicUserFields = {
+  id: true,
+  name: true,
+  email: true,
+  admin: true,
+  createdAt: true,
+} as const;
+
+// Contas antigas podem ter maiúsculas no e-mail, então a comparação não diferencia caixa.
+async function assertEmailAvailable(email: string, exceptUserId?: string) {
+  const taken = await prisma.user.findFirst({
+    where: {
+      email: { equals: email, mode: "insensitive" },
+      id: exceptUserId ? { not: exceptUserId } : undefined,
+    },
+    select: { id: true },
+  });
+
+  if (taken) {
+    throw new AppError(409, "EMAIL_TAKEN", "Já existe um cadastro com este e-mail.");
+  }
 }
 
 export class UserService{
-  async createUser(userdata: Usertype) {
-    userdata.password = await bcrypt.hash(userdata.password, 10);
-    
-    const user = await prisma.user.create({
+  async createUser(userdata: CreateUserInput) {
+    await assertEmailAvailable(userdata.email);
+
+    const password = await bcrypt.hash(userdata.password, 10);
+
+    return await prisma.user.create({
       data: {
-        id: userdata.id,
         name: userdata.name,
         email: userdata.email,
-        password: userdata.password,
-      }
+        password,
+      },
+      select: publicUserFields,
     })
-    
-    return user;
   }
 
-  async GetAllUsers() {
-    const users = await prisma.user.findMany()
-    return users;
+  async GetAllUsers(pagination: Pagination) {
+    const [users, total] = await Promise.all([
+      prisma.user.findMany({
+        select: publicUserFields,
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+        ...toSkipTake(pagination),
+      }),
+      prisma.user.count(),
+    ]);
+
+    return { users, total };
   }
 
   async GetUserById(id:string) {
-    const user = await prisma.user.findUnique({ where: { id } })
-    return user;
+    return await prisma.user.findUnique({ where: { id }, select: publicUserFields })
   }
 
   async DeleteUserById(id:string){
-    const user = await prisma.user.delete({ where: { id: id }})
-    return user;
+    const target = await prisma.user.findUnique({ where: { id }, select: { admin: true } });
+
+    if (target?.admin && (await prisma.user.count({ where: { admin: true } })) === 1) {
+      throw new AppError(409, "LAST_ADMIN", "Não é possível excluir o último administrador.");
+    }
+
+    return await prisma.user.delete({ where: { id }, select: publicUserFields })
   }
 
-  async UpdateUserById(id: string, userdata: UsertypeUpdate) {
-    try {
-      const data: any = {
+  async UpdateUserById(id: string, userdata: UpdateUserInput) {
+    await assertEmailAvailable(userdata.email, id);
+
+    return await prisma.user.update({
+      where: { id },
+      data: {
         name: userdata.name,
         email: userdata.email,
-      };
-
-      if (userdata.password) {
-        data.password = await bcrypt.hash(userdata.password, 10);
-      }
-
-      const user = await prisma.user.update({
-        where: { id },
-        data,
-      });
-
-      return user;
-
-    } catch (error: any) {
-      if (error.code === 'P2025') {
-        throw new Error('User not found');
-      }
-
-      throw new Error('Internal error');
-    }
+        admin: userdata.admin,
+        password: userdata.password
+          ? await bcrypt.hash(userdata.password, 10)
+          : undefined,
+      },
+      select: publicUserFields,
+    });
   }
 }

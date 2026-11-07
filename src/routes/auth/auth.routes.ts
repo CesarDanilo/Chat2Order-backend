@@ -1,5 +1,8 @@
 import { Router } from 'express';
 import { AuthenticateUserController } from '../../controllers/auth/auth.controller';
+import { loginLimiter } from '../../middleware/rateLimits';
+import { validate } from '../../middleware/validate';
+import { loginSchema } from '../../schemas/user.schema';
 
 const router = Router();
 
@@ -30,6 +33,6 @@ const router = Router();
  *       200:
  *         description: Login realizado com sucesso
  */
-router.post('/auth/login', AuthenticateUserController)
+router.post('/auth/login', loginLimiter, validate({ body: loginSchema }), AuthenticateUserController)
 
 export default router;

@@ -1,15 +1,9 @@
+import { User } from "@prisma/client";
+import { randomUUID } from "node:crypto";
 import {
   IUserRepository,
   CreateUserDTO
 } from "../interfaces/IUserRepository";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  password: string;
-  createdAt: Date;
-}
 
 export class FakeUsersRepository
   implements IUserRepository {
@@ -19,7 +13,8 @@ export class FakeUsersRepository
   async create(data: CreateUserDTO) {
 
     const user: User = {
-      id: crypto.randomUUID(),
+      id: randomUUID(),
+      admin: false,
       ...data,
     };
 
@@ -31,7 +26,7 @@ export class FakeUsersRepository
   async findByEmail(email: string) {
 
     const user = this.users.find(
-      user => user.email === email
+      user => user.email.toLowerCase() === email.toLowerCase()
     );
 
     return user || null;

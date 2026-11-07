@@ -2,6 +2,9 @@ import { Router } from "express";
 
 import { ParseController } from "../controllers/parse.controller";
 import { authMiddleware } from "../middleware/authUser";
+import { parseLimiter } from "../middleware/rateLimits";
+import { validate } from "../middleware/validate";
+import { parseMessageSchema } from "../schemas/parse.schema";
 
 const router = Router();
 
@@ -143,6 +146,12 @@ const controller = new ParseController();
  *       500:
  *         description: Erro interno do servidor
  */
-router.post("/parse", authMiddleware, controller.handle);
+router.post(
+  "/parse",
+  authMiddleware,
+  validate({ body: parseMessageSchema }),
+  parseLimiter,
+  controller.handle,
+);
 
 export default router;

@@ -1,83 +1,39 @@
 import { Request, Response } from "express";
+import { AppError } from "../errors/AppError";
 import { UserService } from "../services/user.service";
 
 export class UserController{
   async CreateUserController(req: Request, res: Response) {
-    const userService = new UserService();
+    const result = await new UserService().createUser(req.body);
 
-    try {
-      const result = await userService.createUser(req.body);
-      return res.status(201).json(result);
-    }catch(error){
-      return res.status(500)
-    }
+    return res.status(201).json(result);
   }
 
   async GetAllUsersController(req: Request, res: Response){
-    const userService = new UserService();
+    const { users, total } = await new UserService().GetAllUsers(res.locals.query);
 
-    try{
-      const result = await userService.GetAllUsers();
-      return res.status(200).json(result);
-    }catch(error){
-      return res.status(500);
-    }
+    res.setHeader("X-Total-Count", total);
+
+    return res.status(200).json(users);
   }
 
   async GetUserByIdController(req: Request<{ id: string }>, res: Response) {
-    const userService = new UserService();
+    const result = await new UserService().GetUserById(req.params.id);
 
-    if(!req.params.id) throw new Error("id is required");
+    if (!result) throw new AppError(404, "NOT_FOUND", "Usuário não encontrado");
 
-    const { id } = req.params;
-    try{
-      const result = await userService.GetUserById(id);
-      return res.status(200).json(result);
-    }catch(error){
-      return res.status(500);
-    }
+    return res.status(200).json(result);
   }
 
   async DeleteUserByIdController(req: Request<{ id:string }> , res: Response){
-    const userService = new UserService();
-    if(!req.params.id) throw new Error("id is required");
-    const { id } = req.params;
-    try{
-      const result = await userService.DeleteUserById(id);
-      return res.status(204).json(result);
-    }catch(error){
-      return res.status(500);
-    }
+    const result = await new UserService().DeleteUserById(req.params.id);
+
+    return res.status(204).json(result);
   }
 
   async UpdateUserByIdController(req: Request<{ id: string }>, res: Response) {
-    const userService = new UserService();
+    const result = await new UserService().UpdateUserById(req.params.id, req.body);
 
-    if (!req.params.id || !req.body.name || !req.body.email || !req.body.password) {
-      return res.status(400).json({
-        message: "id, name, email and password are required"
-      });
-    }
-
-    const { id } = req.params;
-    const userdata = req.body;
-
-    try {
-      const result = await userService.UpdateUserById(id, userdata);
-
-      return res.status(200).json(result);
-
-    } catch (error: any) {
-
-      if (error.message === 'User not found') {
-        return res.status(404).json({
-          message: error.message
-        });
-      }
-
-      return res.status(500).json({
-        message: 'Erro interno'
-      });
-    }
+    return res.status(200).json(result);
   }
 }

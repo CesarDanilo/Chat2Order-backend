@@ -1,12 +1,31 @@
-import type { Order } from "@prisma/client";
 import { prisma } from "../config/prisma";
 import {
   IOrderRepository,
-  type CreateOrderInput,
+  type StoredOrderInput,
 } from "../interfaces/IOrderRepository";
+import { Pagination, toSkipTake } from "../schemas/common";
+import { nullIfNotFound } from "./prismaErrors";
+
+// Só estes campos são gravados: dono e relações nunca vêm do corpo da requisição.
+function toOrderFields(data: StoredOrderInput) {
+  return {
+    customerName: data.customerName,
+    customerPhone: data.customerPhone,
+    address: data.address,
+    paymentMethod: data.paymentMethod,
+    status: data.status,
+    total: data.total,
+    source: data.source,
+    rawMessage: data.rawMessage,
+  };
+}
 
 export class PrismaOrderRepository implements IOrderRepository {
-  async findManyByUserId(userId: string) {
+  async countByUserId(userId: string) {
+    return await prisma.order.count({ where: { userId } });
+  }
+
+  async findManyByUserId(userId: string, pagination: Pagination) {
     return await prisma.order.findMany({
       where: {
         userId,
@@ -16,16 +35,17 @@ export class PrismaOrderRepository implements IOrderRepository {
         items: true,
       },
 
-      orderBy: {
-        createdAt: "desc",
-      },
+      orderBy: [{ createdAt: "desc" }, { id: "asc" }],
+
+      ...toSkipTake(pagination),
     });
   }
 
-  async findById(orderId: string) {
-    return await prisma.order.findUnique({
+  async findByIdForOwner(orderId: string, ownerId: string) {
+    return await prisma.order.findFirst({
       where: {
         id: orderId,
+        userId: ownerId,
       },
 
       include: {
@@ -34,52 +54,83 @@ export class PrismaOrderRepository implements IOrderRepository {
     });
   }
 
-  async update(orderId: string, data: CreateOrderInput) {
-    const { userId, items, ...rest } = data;
-
-    return await prisma.order.update({
-      where: {
-        id: orderId,
-      },
-
-      data: {
-        ...rest,
-
-        items: {
-          deleteMany: {},
-
-          create: items,
+  async updateForOwner(
+    orderId: string,
+    ownerId: string,
+    expectedStatus: string,
+    data: StoredOrderInput,
+  ) {
+    return await nullIfNotFound(
+      prisma.order.update({
+        where: {
+          id: orderId,
+          userId: ownerId,
+          status: expectedStatus,
         },
-      },
 
-      include: {
-        items: true,
-      },
-    });
+        data: {
+          ...toOrderFields(data),
+
+          items: {
+            deleteMany: {},
+
+            create: data.items,
+          },
+
+          history:
+            data.status === expectedStatus ? undefined : { create: { status: data.status } },
+        },
+
+        include: {
+          items: true,
+        },
+      }),
+    );
   }
-  async create(data: CreateOrderInput) {
-    const { userId, items, ...rest } = data;
 
+  async create(data: StoredOrderInput) {
     return await prisma.order.create({
       data: {
-        ...rest,
+        ...toOrderFields(data),
 
         user: {
-          connect: { id: userId },
+          connect: { id: data.userId },
         },
 
-        items: items
-          ? {
-              create: items,
-            }
-          : undefined,
+        items: {
+          create: data.items,
+        },
+
+        history: {
+          create: { status: data.status },
+        },
+      },
+      include: {
+        items: true,
       },
     });
   }
 
-  async delete(id: string) {
-    return await prisma.order.delete({
-      where: { id },
+  async deleteForOwner(orderId: string, ownerId: string) {
+    const order = await prisma.order.findFirst({
+      where: { id: orderId, userId: ownerId },
+      select: { id: true },
+    });
+
+    if (!order) return null;
+
+    // O histórico tem FK restritiva: precisa sair junto, na mesma transação.
+    const [, deleted] = await prisma.$transaction([
+      prisma.orderStatusHistory.deleteMany({ where: { orderId } }),
+      prisma.order.delete({ where: { id: orderId } }),
+    ]);
+
+    return deleted;
+  }
+
+  async countOwnedProducts(productIds: string[], ownerId: string) {
+    return await prisma.product.count({
+      where: { id: { in: productIds }, userId: ownerId },
     });
   }
 }

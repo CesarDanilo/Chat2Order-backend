@@ -3,7 +3,6 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
-import rateLimit from "express-rate-limit";
 
 import parseRoutes from "./routes/parse.routes";
 import userRoutes from "./routes/user.routes";
@@ -15,8 +14,13 @@ import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 
 import { swaggerOptions } from "./config/swagger";
+import { errorHandler } from "./middleware/errorHandler";
+import { globalLimiter } from "./middleware/rateLimits";
 
 const app = express();
+
+// A API roda atrás de um proxy: sem isto, todos os clientes dividiriam o mesmo IP no rate limit.
+app.set("trust proxy", 1);
 
 /**
  * =========================
@@ -27,28 +31,21 @@ app.use(helmet());
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://chat2order-frontend.vercel.app"
+    "https://chat2order-frontend.vercel.app",
+    // Só extensões com ID conhecido. Nunca liberar chrome-extension:// de forma genérica.
+    ...(process.env.EXTENSION_ORIGINS?.split(",") ?? [])
   ],
-  credentials: true
+  credentials: true,
+  exposedHeaders: ["X-Total-Count"]
 }));
-app.use(express.json());
+app.use(express.json({ limit: "200kb" }));
 
 /**
  * =========================
  * RATE LIMIT (GLOBAL)
  * =========================
  */
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // limite por IP
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    error: "Too many requests, try again later.",
-  },
-});
-
-app.use(limiter);
+app.use(globalLimiter);
 
 /**
  * =========================
@@ -96,6 +93,8 @@ app.use("/api", productRoutes);
 app.get("/", (req, res) => {
   res.status(200).send("API Chat2Order rodando 🚀");
 });
+
+app.use(errorHandler);
 
 console.log("APP CONFIGURED");
 export default app;

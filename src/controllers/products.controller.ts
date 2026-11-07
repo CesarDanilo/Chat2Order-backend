@@ -1,88 +1,52 @@
 import { Request, Response } from "express";
-import { ProductServices } from "../services/products.service";
+import { AppError } from "../errors/AppError";
 import { PrismaProductsRepository } from "../repository/PrismaProductsRepository";
+import { ProductServices } from "../services/products.service";
+
+const productNotFound = () => new AppError(404, "NOT_FOUND", "Produto não encontrado");
+
+const createService = () => new ProductServices(new PrismaProductsRepository());
+
+const ownerOf = (req: Request): string => (req as any).user.id;
+
+const productId = (req: Request) => String(req.params.id);
 
 export class ProductsController {
     async CreateProducts(req: Request, res: Response) {
-        const productsRepository = new PrismaProductsRepository();
-        const productsService = new ProductServices(productsRepository);
+        const product = await createService().CreateProducts(req.body, ownerOf(req));
 
-        try {
-            const userId = (req as any).user.id;
-            const product = await productsService.CreateProducts(req.body, userId);
-            return res.json(product);
-        } catch (error: any) {
-            return res.status(500).json({
-                error: "Error processing Product",
-                message: error.message,
-            });
-        }
+        return res.json(product);
     }
 
     async GetProductsByUser(req: Request, res: Response) {
-        const productsRepository = new PrismaProductsRepository();
-        const productsService = new ProductServices(productsRepository);
+        const { products, total } = await createService().GetProductsByUser(ownerOf(req), res.locals.query);
 
-        try {
-            const product = await productsService.GetProductsByUser((req as any).user.id);
+        res.setHeader("X-Total-Count", total);
 
-            if (!product || product.length === 0) {
-                return res.status(404).json({
-                    message: "Nenhum produto encontrado"
-                })
-            }
-
-            return res.json(product)
-        } catch (error: any) {
-            return res.status(500).json({
-                error: "Error processing Product",
-                message: error.message,
-            });
-        }
+        return res.json(products);
     }
 
     async UpdateProducts(req: Request, res: Response) {
-        const productsRepository = new PrismaProductsRepository();
-        const productsService = new ProductServices(productsRepository);
+        const product = await createService().UpdateProduct(productId(req), ownerOf(req), req.body);
 
-        try {
-            const product = await productsService.UpdateProduct((req.params as any).id, req.body)
-            return res.json(product);
-        } catch (error: any) {
-            return res.status(500).json({
-                error: "Error processing Product",
-                message: error.message,
-            });
-        }
+        if (!product) throw productNotFound();
+
+        return res.json(product);
     }
 
     async GetProductById(req: Request, res: Response) {
-        const productsRepository = new PrismaProductsRepository();
-        const productsService = new ProductServices(productsRepository);
+        const product = await createService().GetProductById(productId(req), ownerOf(req));
 
-        try {
-            const product = await productsService.GetProductById((req.params as any).id)
-            return res.json(product);
-        } catch (error: any) {
-            return res.status(500).json({
-                error: "Error processing Product",
-                message: error.message,
-            });
-        }
+        if (!product) throw productNotFound();
+
+        return res.json(product);
     }
 
     async DeleteProduct(req: Request, res: Response) {
-        const productsRepository = new PrismaProductsRepository();
-        const productsService = new ProductServices(productsRepository);
+        const product = await createService().DeleteProductById(productId(req), ownerOf(req));
 
-        try {
-            const product = await productsService.DeleteProductById((req.params as any).id)
-            return res.json(product);
-        } catch (error: any) {
-            return res.status(500).json({
-                error: "Error processing Product",
-                message: error.message,
-            });
-        }
+        if (!product) throw productNotFound();
+
+        return res.json(product);
     }
 }

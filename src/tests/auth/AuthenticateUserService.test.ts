@@ -39,7 +39,7 @@ describe('AuthenticateUserService', () => {
       createdAt: new Date()
     });
 
-    await expect(authenticateUserService.execute("invalid@gmail.com", "123456")).rejects.toThrow("Invalid credentials")
+    await expect(authenticateUserService.execute("invalid@gmail.com", "123456")).rejects.toThrow("E-mail ou senha incorretos")
   })
 
   it('should not authenticate with invalid password', async() => {
@@ -55,6 +55,6 @@ describe('AuthenticateUserService', () => {
       createdAt: new Date()
     });
 
-    await expect(authenticateUserService.execute("cesardanilopalacios390@gmail.com", "0000")).rejects.toThrow("Invalid credentials")
+    await expect(authenticateUserService.execute("cesardanilopalacios390@gmail.com", "0000")).rejects.toThrow("E-mail ou senha incorretos")
   })
 })
