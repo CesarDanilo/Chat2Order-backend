@@ -12,14 +12,14 @@
 | Fase 2 — Auditoria | ✅ Concluída |
 | E0 — Rede de proteção | ✅ Concluída localmente. Falta tirar `dist/` do Git |
 | E1 — Hotfix de segurança | ✅ Concluída localmente, sem deploy |
-| E2 — Blindagem da API | 🟡 Validação, erros, limites e dependências do backend prontos. Faltam dependências do frontend e da extensão |
-| E3 — Integridade de dados | 🟡 Decimal, CHECK e índices prontos. Falta DB-01 |
+| E2 — Blindagem da API | ✅ Concluída |
+| E3 — Integridade de dados | ✅ Concluída. `VALIDATE CONSTRAINT` depende da limpeza de dados de produção |
 | E4 — Validação de produção | ⏳ Pendente |
-| E5 — Backend modular | ⏳ Pendente |
-| E6 — IA e privacidade | 🟡 Saída validada, importação sem duplicar. Faltam SEC-12 e prompt injection |
-| E7 — Extensão integrada | 🟡 CORS e duplicação resolvidos. Falta EXT-02 e captura |
-| E8 — Frontend e design system | 🟡 Formulários validados. Faltam FE-03 a FE-07 e 14 avisos de lint |
-| E9 — Qualidade final | 🟡 CI e E2E prontos. Falta observabilidade |
+| E5 — Backend modular | ✅ Concluída, com teste de fronteiras |
+| E6 — IA e privacidade | 🟡 Saída validada, importação sem duplicar, aviso de privacidade. Faltam prompt injection e prazo de retenção |
+| E7 — Extensão integrada | 🟡 CORS, duplicação, configuração de produção e redesenho prontos. Falta EXT-04 (captura no WhatsApp) |
+| E8 — Frontend e design system | ✅ Concluída, lint com 0 avisos |
+| E9 — Qualidade final | ✅ CI com E2E, logs estruturados, request id e health com banco |
 
 ## Decisões adotadas
 
@@ -55,16 +55,16 @@ O trabalho está na branch `feat/security-validation-modernization` dos três re
 
 | Verificação | Resultado |
 |---|---|
-| `npm test` no backend | ✅ 18 de 18 suítes, 374 de 374 testes |
+| `npm test` no backend | ✅ 22 de 22 suítes, 400 de 400 testes |
 | Mesmo pipeline em Linux, Node 22, PostgreSQL 16 | ✅ Aprovado |
 | Typecheck do backend | ✅ Aprovado |
 | Imagem Docker do backend | ✅ Compila |
 | `npm audit --omit=dev` no backend | ✅ 0 vulnerabilidades |
 | Build de frontend e extensão | ✅ Aprovado, também em Node 22 |
-| Lint do frontend | ✅ 0 erros, 14 avisos |
+| Lint do frontend | ✅ 0 erros, 0 avisos |
 | Lint da extensão | ✅ Sem problemas |
 | `actionlint` nos 3 workflows | ✅ Aprovado |
-| E2E com Playwright | ✅ 39 de 39 (38 testes e o login inicial) |
+| E2E com Playwright | ✅ 39 de 39, local e no CI |
 | Migration com dados legados e rollback | ✅ Aprovado |
 | Seed: recusas e repetição sem duplicar | ✅ Aprovado |
 | CI no GitHub | Não executado, nada publicado |

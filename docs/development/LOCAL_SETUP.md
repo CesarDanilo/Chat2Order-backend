@@ -88,7 +88,7 @@ Em `chat2order-frontend-extension/frontend`, crie `.env.local`:
 VITE_API_URL="http://127.0.0.1:3001/api"
 ```
 
-Depois rode `npm ci` e `npm run build`. No Chrome, abra `chrome://extensions`, ative o modo do desenvolvedor, clique em **Carregar sem compactação** e selecione a pasta `dist`.
+Depois rode `npm ci` e `npm run build:local`. O `npm run build` gera a versão da loja e recusa URLs locais. No Chrome, abra `chrome://extensions`, ative o modo do desenvolvedor, clique em **Carregar sem compactação** e selecione a pasta `dist`.
 
 O backend só aceita extensões com ID conhecido. Copie o ID em `chrome://extensions` e adicione ao `.env` do backend:
 
@@ -117,4 +117,8 @@ No frontend, copie `.env.e2e.example` para `.env.e2e` e preencha com as contas d
 npm run test:e2e
 ```
 
-A suíte consome parte do limite de requisições do backend. Reinicie o backend entre execuções seguidas.
+A suíte consome parte do limite de requisições do backend. Reinicie o backend entre execuções seguidas. No CI ela roda sozinha, no job `e2e` do frontend.
+
+## 8. Logs e saúde
+
+O backend escreve uma linha JSON por requisição no terminal. `GET /health` mostra se a API e o banco estão no ar.

@@ -14,11 +14,11 @@ Validação no navegador é só experiência de uso. Toda regra de segurança pr
 
 | O que | Onde |
 |---|---|
-| Schemas e limites | `Chat2Order-backend/src/schemas/` |
-| Aplicar o schema | `validate()` em `src/middleware/validate.ts` |
-| Autorização | `src/middleware/authUser.ts` e repositórios, que exigem `ownerId` |
-| Regras de negócio | Serviços do domínio, em `src/services/` |
-| Ambiente | `src/config/env.ts` |
+| Schemas e limites | `src/modules/<módulo>/presentation/*.schema.ts` e `src/shared/validation/` |
+| Aplicar o schema | `validate()` em `src/shared/http/validate.ts` |
+| Autorização | `src/modules/auth/presentation/authMiddleware.ts` e repositórios, que exigem `ownerId` |
+| Regras de negócio | `domain/` e `application/` de cada módulo |
+| Ambiente | `src/app/config/env.ts` |
 | Limites no frontend | `src/lib/validation.ts` |
 
 ## Formato de erro
@@ -45,7 +45,7 @@ Toda resposta de erro segue este formato:
 | 400 | `INVALID_JSON` | Corpo não é JSON válido |
 | 400 | `INVALID_PRODUCT` | Produto não pertence à conta |
 | 400 | `CANNOT_REMOVE_OWN_ADMIN` | Admin tenta retirar o próprio acesso |
-| 401 | `UNAUTHORIZED` | Token ausente, inválido, expirado ou de conta excluída |
+| 401 | `UNAUTHORIZED` | Token ausente, inválido, expirado, revogado por logout ou troca de senha, ou de conta excluída |
 | 401 | `INVALID_CREDENTIALS` | Login errado, mesma resposta para conta existente ou não |
 | 403 | `FORBIDDEN` | Sem permissão |
 | 404 | `NOT_FOUND` | Registro inexistente ou de outra conta |
@@ -114,7 +114,7 @@ Aceita máscara e grava normalizado. Número brasileiro fica só com dígitos, s
 | `CONCLUIDO` | `CANCELADO` |
 | `CANCELADO` | Nenhum (final) |
 
-Manter o mesmo status é sempre permitido, então repetir a requisição é seguro. Pedido novo começa em `PENDENTE` ou `CONCLUIDO`. A regra fica em um único mapa, em `src/services/orderStatus.ts`. Status antigo fora da lista pode ser corrigido. Cada criação e mudança gera uma linha em `OrderStatusHistory`.
+Manter o mesmo status é sempre permitido, então repetir a requisição é seguro. Pedido novo começa em `PENDENTE` ou `CONCLUIDO`. A regra fica em um único mapa, em `src/modules/orders/domain/orderStatus.ts`. Status antigo fora da lista pode ser corrigido. Cada criação e mudança gera uma linha em `OrderStatusHistory`.
 
 ## Dinheiro
 
@@ -130,6 +130,18 @@ Mínimo de 8 caracteres e máximo de 72 bytes. **Não há regra de composição*
 
 O limite de 72 bytes existe porque o bcrypt ignora o que vem depois, e o caractere nulo porque o bcrypt para nele.
 
+## Sessão
+
+O token é um JWT HS256 de 1 dia com identificador único (`jti`) e a versão da senha (`ver`). A cada requisição o backend confere conta, papel, versão e se o token foi revogado.
+
+| Ação | Efeito |
+|---|---|
+| `POST /api/auth/logout` | Revoga só a sessão atual |
+| Troca de senha, pela própria conta ou por admin | Revoga todas as sessões da conta |
+| Exclusão da conta | Todas as sessões deixam de valer na hora |
+
+No frontend, qualquer 401 limpa a sessão e leva ao login com aviso.
+
 ## Limites de uso
 
 | Rota | Limite | Conta |
@@ -143,9 +155,13 @@ O limite de 72 bytes existe porque o bcrypt ignora o que vem depois, e o caracte
 
 `GET /user`, `GET /product` e `GET /order` aceitam `?page=1&limit=100` e informam o total no cabeçalho `X-Total-Count`. A ordenação é fixa no servidor. O padrão de 500 preserva o comportamento do frontend, que ainda carrega a lista inteira e filtra no navegador.
 
+## Observabilidade
+
+Cada requisição recebe um id, devolvido em `X-Request-Id` e reaproveitado se vier do cliente com formato seguro. O backend grava uma linha JSON por requisição com método, rota sem query, status e duração. Corpo, query, token e dados de clientes nunca entram no log. `/health` consulta o banco, responde 503 se ele estiver fora e não consome o limite de requisições.
+
 ## Como adicionar um campo
 
-1. Inclua o campo e o limite no schema, em `src/schemas/`.
+1. Inclua o campo e o limite no schema de entrada do módulo, em `src/modules/<módulo>/presentation/`.
 2. Escreva testes dos casos válidos, dos limites e dos inválidos.
 3. Inclua na lista fechada de campos do repositório.
 4. Replique o limite em `src/lib/validation.ts` no frontend e, se for o caso, na extensão.
