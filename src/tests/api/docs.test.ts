@@ -8,7 +8,7 @@ describe("documentação da API", () => {
     jest.resetModules();
   });
 
-  const loadApp = () => require("../../app").default;
+  const loadApp = () => require("../../app/app").default;
 
   it("fica disponível fora de produção", async () => {
     process.env.NODE_ENV = "test";

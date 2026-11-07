@@ -1,9 +1,9 @@
-import { AppError } from "../errors/AppError";
+import { AppError } from "../shared/errors/AppError";
 import {
   IOrderRepository,
   type CreateOrderInput,
 } from "../interfaces/IOrderRepository";
-import { Pagination } from "../schemas/common";
+import { Pagination } from "../shared/validation/common";
 import { canCreateWith, canTransition } from "./orderStatus";
 import { calculateOrderTotals } from "./orderTotals";
 

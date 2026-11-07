@@ -1,5 +1,5 @@
 import { IProductRepository, CreateProducts, UpdateProducts } from "../interfaces/IProductsRepository";
-import { Pagination } from "../schemas/common";
+import { Pagination } from "../shared/validation/common";
 
 
 export class ProductServices {

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { AppError } from "../errors/AppError";
+import { AppError } from "../shared/errors/AppError";
 import { PrismaProductsRepository } from "../repository/PrismaProductsRepository";
 import { ProductServices } from "../services/products.service";
 

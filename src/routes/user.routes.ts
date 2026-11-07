@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { UserController } from "../controllers/user.controller";
 import { authMiddleware, guardRoleChange, requireAdmin, requireSelfOrAdmin } from "../middleware/authUser";
-import { validate } from "../middleware/validate";
-import { registerLimiter } from "../middleware/rateLimits";
-import { idParams, paginationQuery } from "../schemas/common";
+import { validate } from "../shared/http/validate";
+import { registerLimiter } from "../shared/http/rateLimits";
+import { idParams, paginationQuery } from "../shared/validation/common";
 import { createUserSchema, updateUserSchema } from "../schemas/user.schema";
 
 const router = Router();

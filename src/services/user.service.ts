@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
-import { prisma } from "../config/prisma";
-import { AppError } from "../errors/AppError";
-import { Pagination, toSkipTake } from "../schemas/common";
+import { prisma } from "../shared/database/prisma";
+import { AppError } from "../shared/errors/AppError";
+import { Pagination, toSkipTake } from "../shared/validation/common";
 import { CreateUserInput, UpdateUserInput } from "../schemas/user.schema";
 
 // Lista fechada do que sai para a API: a senha nunca faz parte da resposta.

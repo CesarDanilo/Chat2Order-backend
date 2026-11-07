@@ -7,8 +7,8 @@ import "dotenv/config";
 import { createHash, randomBytes } from "node:crypto";
 import { appendFileSync } from "node:fs";
 import bcrypt from "bcrypt";
-import { prisma } from "../src/config/prisma";
-import { normalizePhone } from "../src/schemas/phone";
+import { prisma } from "../src/shared/database/prisma";
+import { normalizePhone } from "../src/shared/validation/phone";
 import { calculateOrderTotals } from "../src/services/orderTotals";
 
 const ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "postgres"];

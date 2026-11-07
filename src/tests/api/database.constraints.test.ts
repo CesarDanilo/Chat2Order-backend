@@ -1,4 +1,4 @@
-import { prisma } from "../../config/prisma";
+import { prisma } from "../../shared/database/prisma";
 import { Account, createAccount, createOrder, createProduct } from "./support/helpers";
 
 // Grava direto pelo Prisma, sem a API: prova que o banco barra sozinho o que escapar da aplicação.

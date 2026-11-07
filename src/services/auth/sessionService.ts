@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import jwt from "jsonwebtoken";
-import { prisma } from "../../config/prisma";
+import { prisma } from "../../shared/database/prisma";
 
 const SESSION_DURATION = "1d";
 

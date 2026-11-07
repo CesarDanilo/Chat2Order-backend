@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { LIMITS, text } from "./common";
+import { LIMITS, text } from "../shared/validation/common";
 
 const name = text({
   label: "o nome",

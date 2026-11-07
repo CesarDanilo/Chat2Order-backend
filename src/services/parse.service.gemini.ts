@@ -1,4 +1,4 @@
-import { prisma } from "../config/prisma";
+import { prisma } from "../shared/database/prisma";
 import { GoogleGenAI } from "@google/genai";
 
 export class ParserService {

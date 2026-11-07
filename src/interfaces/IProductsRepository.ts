@@ -1,5 +1,5 @@
 import { Product } from "@prisma/client";
-import { Pagination } from "../schemas/common";
+import { Pagination } from "../shared/validation/common";
 
 export interface CreateProducts {
   userId: string;

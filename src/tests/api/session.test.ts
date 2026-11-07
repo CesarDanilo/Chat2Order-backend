@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import request from "supertest";
-import app from "../../app";
-import { prisma } from "../../config/prisma";
+import app from "../../app/app";
+import { prisma } from "../../shared/database/prisma";
 import { Account, PASSWORD, bearer, createAccount } from "./support/helpers";
 
 afterAll(async () => {

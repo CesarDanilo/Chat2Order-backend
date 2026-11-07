@@ -1,6 +1,6 @@
 import Groq from "groq-sdk";
-import { prisma } from "../config/prisma";
-import { AppError } from "../errors/AppError";
+import { prisma } from "../shared/database/prisma";
+import { AppError } from "../shared/errors/AppError";
 import { aiOrderSchema } from "../schemas/parse.schema";
 import { calculateOrderTotals } from "./orderTotals";
 

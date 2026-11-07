@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { AppError } from "../errors/AppError";
+import { AppError } from "../shared/errors/AppError";
 import { PrismaUsersRepository } from "../repository/PrismaUsersRepository";
 import { isRevoked, readToken } from "../services/auth/sessionService";
 

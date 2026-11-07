@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto";
 import request from "supertest";
-import app from "../../app";
-import { prisma } from "../../config/prisma";
+import app from "../../app/app";
+import { prisma } from "../../shared/database/prisma";
 import { Account, PASSWORD, bearer, createAccount, expectValidationError } from "./support/helpers";
 
 const newUser = (overrides: object = {}) => ({

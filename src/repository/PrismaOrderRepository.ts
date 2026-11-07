@@ -1,10 +1,10 @@
-import { prisma } from "../config/prisma";
+import { prisma } from "../shared/database/prisma";
 import {
   IOrderRepository,
   type StoredOrderInput,
 } from "../interfaces/IOrderRepository";
-import { Pagination, toSkipTake } from "../schemas/common";
-import { nullIfNotFound } from "./prismaErrors";
+import { Pagination, toSkipTake } from "../shared/validation/common";
+import { nullIfNotFound } from "../shared/database/prismaErrors";
 
 // Só estes campos são gravados: dono e relações nunca vêm do corpo da requisição.
 function toOrderFields(data: StoredOrderInput) {

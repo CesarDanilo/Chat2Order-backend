@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
 import jwt from "jsonwebtoken";
 import request from "supertest";
-import app from "../../app";
-import { prisma } from "../../config/prisma";
+import app from "../../app/app";
+import { prisma } from "../../shared/database/prisma";
 import { Account, PASSWORD, createAccount } from "./support/helpers";
 
 const secret = () => process.env.JWT_SECRET as string;

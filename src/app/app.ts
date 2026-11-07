@@ -4,18 +4,18 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 
-import parseRoutes from "./routes/parse.routes";
-import userRoutes from "./routes/user.routes";
-import authRoutes from "./routes/auth/auth.routes";
-import orderRoutes from "./routes/order.routes";
-import productRoutes from "./routes/products.routes"
+import parseRoutes from "../routes/parse.routes";
+import userRoutes from "../routes/user.routes";
+import authRoutes from "../routes/auth/auth.routes";
+import orderRoutes from "../routes/order.routes";
+import productRoutes from "../routes/products.routes"
 
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
 
 import { swaggerOptions } from "./config/swagger";
-import { errorHandler } from "./middleware/errorHandler";
-import { globalLimiter } from "./middleware/rateLimits";
+import { errorHandler } from "../shared/http/errorHandler";
+import { globalLimiter } from "../shared/http/rateLimits";
 
 const app = express();
 

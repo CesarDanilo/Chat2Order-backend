@@ -1,4 +1,4 @@
-import { UNKNOWN_PHONE, normalizePhone } from "../../schemas/phone";
+import { UNKNOWN_PHONE, normalizePhone } from "../../shared/validation/phone";
 
 describe("normalizePhone", () => {
   it.each([

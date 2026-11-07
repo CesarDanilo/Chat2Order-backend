@@ -1,8 +1,8 @@
 import { Router } from 'express';
 import { AuthenticateUserController, LogoutController } from '../../controllers/auth/auth.controller';
 import { authMiddleware } from '../../middleware/authUser';
-import { loginLimiter } from '../../middleware/rateLimits';
-import { validate } from '../../middleware/validate';
+import { loginLimiter } from '../../shared/http/rateLimits';
+import { validate } from '../../shared/http/validate';
 import { loginSchema } from '../../schemas/user.schema';
 
 const router = Router();

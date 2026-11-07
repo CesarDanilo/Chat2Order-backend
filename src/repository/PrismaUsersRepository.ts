@@ -1,4 +1,4 @@
-import { prisma } from "../config/prisma";
+import { prisma } from "../shared/database/prisma";
 import {
   IUserRepository,
   CreateUserDTO

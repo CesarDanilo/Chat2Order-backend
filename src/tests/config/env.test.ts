@@ -1,4 +1,4 @@
-import { loadEnv } from "../../config/env";
+import { loadEnv } from "../../app/config/env";
 
 const valid = {
   DATABASE_URL: "postgresql://user:pass@localhost:5432/app",

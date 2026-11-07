@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
 import bcrypt from "bcrypt";
 import request from "supertest";
-import app from "../../../app";
-import { prisma } from "../../../config/prisma";
+import app from "../../../app/app";
+import { prisma } from "../../../shared/database/prisma";
 
 export const PASSWORD = "Senha-De-Teste-123";
 
