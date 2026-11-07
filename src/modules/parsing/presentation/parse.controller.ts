@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { ParserService } from "../services/parse.service.groq";
+import { ParserService } from "../application/ParseConversationService";
 
 const parserService = new ParserService();
 

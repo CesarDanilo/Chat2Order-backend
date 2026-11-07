@@ -4,11 +4,7 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 
-import parseRoutes from "../routes/parse.routes";
-import userRoutes from "../modules/users/presentation/user.routes";
-import authRoutes from "../modules/auth/presentation/auth.routes";
-import orderRoutes from "../modules/orders/presentation/order.routes";
-import productRoutes from "../modules/products/presentation/products.routes"
+import { apiRoutes } from "./routes";
 
 import swaggerUi from "swagger-ui-express";
 import swaggerJsdoc from "swagger-jsdoc";
@@ -80,11 +76,7 @@ if (process.env.NODE_ENV !== "production") {
  * ROUTES
  * =========================
  */
-app.use("/api", parseRoutes);
-app.use("/api", userRoutes);
-app.use("/api", authRoutes);
-app.use("/api", orderRoutes);
-app.use("/api", productRoutes);
+app.use("/api", apiRoutes);
 
 /**
  * =========================

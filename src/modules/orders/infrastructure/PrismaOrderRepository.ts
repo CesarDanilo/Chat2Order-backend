@@ -128,6 +128,14 @@ export class PrismaOrderRepository implements IOrderRepository {
     return deleted;
   }
 
+  async findRecentImport(userId: string, rawMessage: string, since: Date) {
+    return await prisma.order.findFirst({
+      where: { userId, source: "WHATSAPP", rawMessage, createdAt: { gte: since } },
+      orderBy: { createdAt: "desc" },
+      include: { items: true },
+    });
+  }
+
   async countOwnedProducts(productIds: string[], ownerId: string) {
     return await prisma.product.count({
       where: { id: { in: productIds }, userId: ownerId },

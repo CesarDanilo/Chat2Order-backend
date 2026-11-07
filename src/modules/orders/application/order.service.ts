@@ -2,6 +2,7 @@ import { AppError } from "../../../shared/errors/AppError";
 import {
   IOrderRepository,
   type CreateOrderInput,
+  type ImportedOrderInput,
 } from "../domain/IOrderRepository";
 import { Pagination } from "../../../shared/validation/common";
 import { canCreateWith, canTransition } from "../domain/orderStatus";
@@ -60,6 +61,21 @@ export class OrderService {
     }
 
     return updated;
+  }
+
+  async FindRecentImport(userId: string, rawMessage: string, since: Date) {
+    return await this.orderRepository.findRecentImport(userId, rawMessage, since);
+  }
+
+  // Pedido vindo de conversa importada: sempre começa pendente e com origem WhatsApp.
+  async CreateImportedOrder(userId: string, data: ImportedOrderInput) {
+    return await this.orderRepository.create({
+      ...data,
+      userId,
+      status: "PENDENTE",
+      source: "WHATSAPP",
+      ...calculateOrderTotals(data.items),
+    });
   }
 
   async DeleteOrder(orderId: string, ownerId: string) {

@@ -35,7 +35,7 @@ export class FakeOrdersRepository implements IOrderRepository {
       status: data.status,
       total: new Prisma.Decimal(data.total),
       source: data.source,
-      rawMessage: null,
+      rawMessage: data.rawMessage ?? null,
       createdAt: new Date(),
       items: this.toItems(id, data.items),
     };
@@ -79,6 +79,18 @@ export class FakeOrdersRepository implements IOrderRepository {
 
     this.orders.splice(this.orders.indexOf(order), 1);
     return order;
+  }
+
+  async findRecentImport(userId: string, rawMessage: string, since: Date): Promise<Order | null> {
+    return (
+      this.orders.find(
+        (order) =>
+          order.userId === userId &&
+          order.source === "WHATSAPP" &&
+          order.rawMessage === rawMessage &&
+          order.createdAt >= since,
+      ) ?? null
+    );
   }
 
   async countOwnedProducts(productIds: string[]): Promise<number> {

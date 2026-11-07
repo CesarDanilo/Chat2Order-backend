@@ -26,6 +26,16 @@ export interface CreateOrderInput {
   total?: number;
 }
 
+// Pedido montado a partir de uma conversa: status e origem são definidos pelo módulo de pedidos.
+export type ImportedOrderInput = {
+  customerName: string;
+  customerPhone: string;
+  address: string;
+  paymentMethod: string;
+  rawMessage: string;
+  items: IItem[];
+};
+
 export type StoredOrderInput = Omit<CreateOrderInput, "items" | "total"> & {
   items: (IItem & { totalPrice: number })[];
   total: number;
@@ -51,4 +61,6 @@ export interface IOrderRepository {
   deleteForOwner(orderId: string, ownerId: string): Promise<Order | null>;
 
   countOwnedProducts(productIds: string[], ownerId: string): Promise<number>;
+
+  findRecentImport(userId: string, rawMessage: string, since: Date): Promise<Order | null>;
 }
