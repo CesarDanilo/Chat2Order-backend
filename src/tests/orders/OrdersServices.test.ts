@@ -1,5 +1,5 @@
-import { FakeOrdersRepository } from "../../repository/FakeOrdersRepository";
-import { OrderService } from "../../services/order.service";
+import { FakeOrdersRepository } from "../../modules/orders/infrastructure/FakeOrdersRepository";
+import { OrderService } from "../../modules/orders/application/order.service";
 
 describe("Order services", () => {
   const data = {

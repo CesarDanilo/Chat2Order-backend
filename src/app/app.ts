@@ -7,7 +7,7 @@ import helmet from "helmet";
 import parseRoutes from "../routes/parse.routes";
 import userRoutes from "../modules/users/presentation/user.routes";
 import authRoutes from "../modules/auth/presentation/auth.routes";
-import orderRoutes from "../routes/order.routes";
+import orderRoutes from "../modules/orders/presentation/order.routes";
 import productRoutes from "../modules/products/presentation/products.routes"
 
 import swaggerUi from "swagger-ui-express";

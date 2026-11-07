@@ -1,5 +1,5 @@
 import { Order, Prisma } from "@prisma/client";
-import { IOrderRepository, StoredOrderInput, OrderWithItems } from "../interfaces/IOrderRepository";
+import { IOrderRepository, StoredOrderInput, OrderWithItems } from "../domain/IOrderRepository";
 import { randomUUID } from "node:crypto";
 
 export class FakeOrdersRepository implements IOrderRepository {

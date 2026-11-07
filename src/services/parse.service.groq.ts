@@ -2,7 +2,7 @@ import Groq from "groq-sdk";
 import { prisma } from "../shared/database/prisma";
 import { AppError } from "../shared/errors/AppError";
 import { aiOrderSchema } from "../schemas/parse.schema";
-import { calculateOrderTotals } from "./orderTotals";
+import { calculateOrderTotals } from "../modules/orders/domain/orderTotals";
 
 // Mesma conversa importada de novo neste intervalo devolve o pedido já criado.
 const REPEATED_IMPORT_WINDOW = 10 * 60 * 1000;

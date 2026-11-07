@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { LIMITS, money, text } from "../shared/validation/common";
-import { normalizePhone } from "../shared/validation/phone";
+import { LIMITS, money, text } from "../../../shared/validation/common";
+import { normalizePhone } from "../../../shared/validation/phone";
 
 export const ORDER_STATUSES = ["PENDENTE", "CONCLUIDO", "CANCELADO"] as const;
 export const PAYMENT_METHODS = ["PIX", "CREDIT_CARD", "DEBIT_CARD", "CASH"] as const;

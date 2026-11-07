@@ -1,4 +1,4 @@
-import { canCreateWith, canTransition } from "../../services/orderStatus";
+import { canCreateWith, canTransition } from "../../modules/orders/domain/orderStatus";
 
 describe("canTransition", () => {
   it.each([

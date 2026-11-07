@@ -1,11 +1,11 @@
-import { AppError } from "../shared/errors/AppError";
+import { AppError } from "../../../shared/errors/AppError";
 import {
   IOrderRepository,
   type CreateOrderInput,
-} from "../interfaces/IOrderRepository";
-import { Pagination } from "../shared/validation/common";
-import { canCreateWith, canTransition } from "./orderStatus";
-import { calculateOrderTotals } from "./orderTotals";
+} from "../domain/IOrderRepository";
+import { Pagination } from "../../../shared/validation/common";
+import { canCreateWith, canTransition } from "../domain/orderStatus";
+import { calculateOrderTotals } from "../domain/orderTotals";
 
 export class OrderService {
   constructor(private orderRepository: IOrderRepository) {}

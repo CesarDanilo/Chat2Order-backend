@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { LIMITS, stripForbiddenChars } from "../shared/validation/common";
-import { PAYMENT_METHODS } from "./order.schema";
+import { PAYMENT_METHODS } from "../modules/orders/presentation/order.schema";
 import { UNKNOWN_PHONE, normalizePhone } from "../shared/validation/phone";
 
 export const parseMessageSchema = z.strictObject({

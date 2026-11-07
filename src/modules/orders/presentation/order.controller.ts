@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import { AppError } from "../shared/errors/AppError";
-import { PrismaOrderRepository } from "../repository/PrismaOrderRepository";
-import { OrderService } from "../services/order.service";
+import { AppError } from "../../../shared/errors/AppError";
+import { PrismaOrderRepository } from "../infrastructure/PrismaOrderRepository";
+import { OrderService } from "../application/order.service";
 
 const orderNotFound = () => new AppError(404, "NOT_FOUND", "Pedido não encontrado");
 

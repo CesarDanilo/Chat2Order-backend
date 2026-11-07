@@ -1,4 +1,4 @@
-import { calculateOrderTotals } from "../../services/orderTotals";
+import { calculateOrderTotals } from "../../modules/orders/domain/orderTotals";
 
 describe("calculateOrderTotals", () => {
   it("calcula o total de cada item e do pedido", () => {

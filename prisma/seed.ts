@@ -9,7 +9,7 @@ import { appendFileSync } from "node:fs";
 import bcrypt from "bcrypt";
 import { prisma } from "../src/shared/database/prisma";
 import { normalizePhone } from "../src/shared/validation/phone";
-import { calculateOrderTotals } from "../src/services/orderTotals";
+import { calculateOrderTotals } from "../src/modules/orders/domain/orderTotals";
 
 const ALLOWED_HOSTS = ["localhost", "127.0.0.1", "[::1]", "postgres"];
 const CREDENTIALS_FILE = ".env.dev-credentials";
