@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { AppError } from "../errors/AppError";
+import { log } from "../logger";
 
 type KnownError = { status: number; code: string; message: string };
 
@@ -34,7 +35,11 @@ export function errorHandler(error: any, _req: Request, res: Response, next: Nex
   const known = BODY_PARSER_ERRORS[error.type] ?? PRISMA_ERRORS[error.code];
   if (known) return respond(res, known);
 
-  console.error("Erro não tratado:", error.name, error.code ?? "", error.message);
+  log("error", "unhandled_error", {
+    requestId: res.locals.requestId,
+    name: error.name,
+    code: error.code,
+  });
 
   return respond(res, {
     status: 500,

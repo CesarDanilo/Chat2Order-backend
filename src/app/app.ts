@@ -12,11 +12,16 @@ import swaggerJsdoc from "swagger-jsdoc";
 import { swaggerOptions } from "./config/swagger";
 import { errorHandler } from "../shared/http/errorHandler";
 import { globalLimiter } from "../shared/http/rateLimits";
+import { requestLogger } from "../shared/http/requestLogger";
+import { prisma } from "../shared/database/prisma";
 
 const app = express();
 
 // A API roda atrás de um proxy: sem isto, todos os clientes dividiriam o mesmo IP no rate limit.
 app.set("trust proxy", 1);
+
+// Primeiro middleware: registra até as requisições recusadas pelos seguintes.
+app.use(requestLogger);
 
 /**
  * =========================
@@ -38,22 +43,20 @@ app.use(express.json({ limit: "200kb" }));
 
 /**
  * =========================
- * RATE LIMIT (GLOBAL)
+ * HEALTH CHECK E RATE LIMIT
  * =========================
  */
-app.use(globalLimiter);
-
-/**
- * =========================
- * HEALTH CHECK (DEV / PROD)
- * =========================
- */
-app.get("/health", (req, res) => {
-  return res.status(200).json({
-    status: "ok",
-    uptime: process.uptime(),
-  });
+// Fora do limite de requisições: é chamado com frequência pela plataforma de hospedagem.
+app.get("/health", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    return res.status(200).json({ status: "ok", database: "ok", uptime: process.uptime() });
+  } catch {
+    return res.status(503).json({ status: "error", database: "unavailable", uptime: process.uptime() });
+  }
 });
+
+app.use(globalLimiter);
 
 /**
  * =========================
@@ -89,5 +92,4 @@ app.get("/", (req, res) => {
 
 app.use(errorHandler);
 
-console.log("APP CONFIGURED");
 export default app;

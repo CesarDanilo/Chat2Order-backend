@@ -1,5 +1,6 @@
 import Groq from "groq-sdk";
 import { AppError } from "../../../shared/errors/AppError";
+import { log } from "../../../shared/logger";
 
 export const UNREADABLE_ANSWER = "Não foi possível interpretar a conversa. Tente novamente.";
 
@@ -18,7 +19,7 @@ export async function askAi(message: string) {
 
     return completion.choices[0]?.message?.content ?? "";
   } catch (error: any) {
-    console.error("Falha ao chamar a IA:", error.status ?? "sem status");
+    log("warn", "ai_request_failed", { status: error.status });
 
     if (error.status === 503) {
       throw new AppError(
